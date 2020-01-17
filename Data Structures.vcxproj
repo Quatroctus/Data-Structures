@@ -139,6 +139,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="MarbleBag.h" />
+    <ClInclude Include="node.h" />
+    <ClInclude Include="queue.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
