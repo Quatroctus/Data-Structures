@@ -3,6 +3,7 @@
 #include <string>
 #include <time.h>
 #include "MarbleBag.h"
+#include "list.h"
 #include "queue.h"
 
 void testMarbles() {
@@ -25,19 +26,57 @@ void testMarbles() {
 	std::cout << marble << std::endl;
 }
 
-int main(void) {
-	Queue<int> *queue = new NodeQueue<int>();
+void testNodeQueue() {
+	Queue<int>* queue = new NodeQueue<int>();
 
 	for (int i = 0; i < 20; i++) {
 		queue->enqueue(i);
 	}
 
-	std::cout << queue->peak() << std::endl;
+	std::cout << "After Initial: " << queue->peak() << std::endl;
 
 	for (int i = 0; i < 5; i++) {
 		queue->dequeue();
+		std::cout << "After dequeue: " << queue->peak() << std::endl;
 		queue->enqueue(i);
-		std::cout << queue->peak() << std::endl;
+		std::cout << "After enqueue: " << queue->peak() << std::endl;
+	}
+}
+
+void testArrayQueue() {
+	Queue<int> *queue = new ArrayQueue<int>();
+
+	for (int i = 0; i < 20; i++) {
+		queue->enqueue(i);
 	}
 
+	std::cout << "After Initial: " << queue->peak() << std::endl;
+
+	for (int i = 0; i < 5; i++) {
+		queue->dequeue();
+		std::cout << "After dequeue: " << queue->peak() << std::endl;
+		queue->enqueue(i);
+		std::cout << "After enqueue: " << queue->peak() << std::endl;
+	}
+}
+
+void testArrayList() {
+	List<int> *list = new ArrayList<int>();
+	for (int i = 0; i < 10; i++)
+		list->append(i);
+
+	list->insert(1000, 4);
+
+	for (int i = 0; i < list->size(); i++)
+		std::cout << "Index: " << i << " Value: " << list->get(i) << std::endl;
+
+	list->remove(6);
+	for (int i = 0; i < list->size(); i++)
+		std::cout << "Index: " << i << " Value: " << list->get(i) << std::endl;
+
+	std::cout << list->size() << std::endl;
+}
+
+int main(void) {
+	
 }

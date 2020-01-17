@@ -138,6 +138,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="list.h" />
     <ClInclude Include="MarbleBag.h" />
     <ClInclude Include="node.h" />
     <ClInclude Include="queue.h" />

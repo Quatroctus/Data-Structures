@@ -1,5 +1,6 @@
 #pragma once
 #include "node.h"
+#include "list.h"
 
 template<typename T>
 struct Queue {
@@ -36,9 +37,9 @@ public:
 
 	}
 
-	virtual bool enqueue(T t) {
+	virtual bool enqueue(T val) {
 		// Construct Node<T> and make it the tail.
-		Node<T>*node = new Node<T>(t);
+		Node<T>*node = new Node<T>(val);
 		if (node != NULL) {
 			if (tail != NULL) {
 				tail->node = node;
@@ -72,32 +73,27 @@ private:
 };
 
 template <typename T>
-class ArrayQueue: public Queue<T> {
+class ArrayQueue: public Queue<T>, private ArrayList<T> {
 
 public:
-	ArrayQueue() {
-		this->items = new T[size];
-	}
-	ArrayQueue(int size) {
-		this->size = size;
-		this->items = new T[size];
-	}
+	ArrayQueue(): ArrayList<T>(1, 1) {}
+	ArrayQueue(int size): ArrayList<T>(size, 1){}
 	// Maybe a copy constructor.
 
-	virtual bool enqueue(T t) {
+	virtual bool enqueue(T val) {
 		// Append to end of array and increase array size when necessary.
+		return this->append(val);
 	}
 
 	virtual T dequeue() {
 		// Get value from array and shift array.
+		return this->remove(0);
 	}
 
 	virtual T& peak() {
 		// Get first value from array but don't remove.
+		return this->get(0);
 	}
 
-private:
-	int size = 1, filled = 0;
-	T *items;
 };
 
