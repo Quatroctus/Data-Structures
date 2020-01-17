@@ -27,6 +27,7 @@ public:
 		this->tail = tail;
 		head = new Node<T>(val, tail);
 	}
+	// Maybe a copy constructor.
 	~NodeQueue() {
 		Node<T>* next;
 		while (head != NULL) {

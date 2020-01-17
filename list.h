@@ -19,11 +19,15 @@ protected:
 template <typename T>
 class ArrayList: public List<T> {
 public:
-	ArrayList(int resizeAmount = -1) {
-		this->resizeAmount = resizeAmount;
+	ArrayList() {
+		this->resizeAmount = -1;
 		this->items = (T *) calloc(this->length, sizeof(T));
 	}
-	ArrayList(int size, int resizeAmount = -1) {
+	ArrayList(int size) {
+		this->length = size;
+		this->items = (T*) calloc(size, sizeof(T));
+	}
+	ArrayList(int size, int resizeAmount) {
 		this->length = size;
 		this->resizeAmount = resizeAmount;
 		this->items = (T *) calloc(size, sizeof(T));
