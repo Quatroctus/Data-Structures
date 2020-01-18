@@ -27,9 +27,9 @@ void testMarbles() {
 }
 
 void testNodeQueue() {
-	Queue<int>* queue = new NodeQueue<int>();
+	Queue<int> *queue = new NodeQueue<int>();
 
-	for (int i = 0; i < 10000; i++) {
+	for (int i = 0; i < 20; i++) {
 		queue->enqueue(i);
 	}
 
@@ -41,13 +41,13 @@ void testNodeQueue() {
 		std::cout << "Queuing was " << (queue->enqueue(i) ? "successful." : "failure") << std::endl;
 		std::cout << "Peak After enqueue: " << queue->peak() << std::endl;
 	}
-	delete queue;	
+	delete queue;
 }
 
 void testArrayQueue() {
 	Queue<int> *queue = new ArrayQueue<int>();
 
-	for (int i = 0; i < 10000; i++) {
+	for (int i = 0; i < 20; i++) {
 		queue->enqueue(i);
 	}
 

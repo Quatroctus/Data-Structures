@@ -46,6 +46,7 @@ public:
 	// Maybe a copy constructor.
 	~NodeQueue() {
 		Node<T> *next;
+		// Oddly enough this doesn't seem to output when delete is used. Better ask Joeseph about it.
 		std::cout << "Deconstructing NodeQueue" << std::endl;
 		while (head != NULL) {
 			next = this->head->node;
