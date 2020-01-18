@@ -5,9 +5,25 @@
 template<typename T>
 struct Queue {
 	
-	virtual bool enqueue(T) = 0;
+	/**
+	Adds a value to the back of the Queue.
+	 
+	@param val The value to add to the Queue.
+	@return Whether enqueuing was a success.
+	*/
+	virtual bool enqueue(T val) = 0;
+	/**
+	Remove the front value of the Queue and return it.
+	
+	@return The value in the front of the Queue.
+	*/
 	virtual T dequeue() = 0;
-	virtual T& peak() = 0;
+	/**
+	Return the front value of the Queue but don't remove it.
+	
+	@return The front value of the Queue.
+	*/
+	virtual T peak() = 0;
 
 };
 
@@ -29,7 +45,8 @@ public:
 	}
 	// Maybe a copy constructor.
 	~NodeQueue() {
-		Node<T>* next;
+		Node<T> *next;
+		std::cout << "Deconstructing NodeQueue" << std::endl;
 		while (head != NULL) {
 			next = this->head->node;
 			delete this->head;
@@ -40,6 +57,7 @@ public:
 
 	virtual bool enqueue(T val) {
 		// Construct Node<T> and make it the tail.
+		// Time Complexity O(1).
 		Node<T>*node = new Node<T>(val);
 		if (node != NULL) {
 			if (tail != NULL) {
@@ -57,6 +75,7 @@ public:
 
 	virtual T dequeue() {
 		// Get value from Node head and update the head.
+		// Time Complexity O(1).
 		Node<T> *next = head->node;
 		T val = head->t;
 		delete head;
@@ -64,8 +83,9 @@ public:
 		return val;
 	}
 
-	virtual T& peak() {
+	virtual T peak() {
 		// Get value from node, but don't remove.
+		// Time Complexity O(1).
 		return head->t;
 	}
 
@@ -83,7 +103,9 @@ public:
 
 	virtual bool enqueue(T val) {
 		// Append to end of array and increase array size when necessary.
-		return this->append(val);
+		this->append(val);
+		std::cout << "Allocated size: " << this->allocatedSize() << std::endl;
+		return true;
 	}
 
 	virtual T dequeue() {
@@ -91,7 +113,7 @@ public:
 		return this->remove(0);
 	}
 
-	virtual T& peak() {
+	virtual T peak() {
 		// Get first value from array but don't remove.
 		return this->get(0);
 	}

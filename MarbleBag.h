@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 
+/// Practically an ArrayList...
 template<typename Marble>
 class MarbleBag {
 
@@ -11,7 +12,7 @@ public:
 		this->marbles = new Marble[size];
 	}
 	~MarbleBag() {
-		delete []marbles;
+		delete[] marbles;
 	}
 
 	void drop(Marble marble) {
@@ -26,7 +27,7 @@ public:
 		this->marbles[filled] = marble;
 		if (resize) {
 			size == 0 ? size = 1 : size *= 2;
-			delete[]marbleBackups;
+			delete[] marbleBackups;
 		}
 		filled++;
 	}

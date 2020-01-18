@@ -2,7 +2,7 @@
 
 template <class T>
 struct Node {
-	Node* node;
+	Node<T> *node;
 	T t;
 	Node() {
 		node = NULL;
