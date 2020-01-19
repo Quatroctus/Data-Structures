@@ -86,10 +86,10 @@ public:
 			this->length = resizeAmount < 0 ? this->length * 2 : this->length + resizeAmount;
 			this->items = (T *) calloc(this->length, sizeof(T));
 			if (items != NULL) {
-				std::memcpy(this->items, backup, (filled) * sizeof(T));
+				std::copy(backup, backup + filled, this->items);
 				delete []backup;
 			} else {
-				// Maybe throw a Out of Memory Exception.
+				// Maybe throw std::bad_alloc("ArrayList Could not Allocate New Array.");
 				return false;
 			}
 		}
@@ -101,7 +101,7 @@ public:
 	virtual bool insert(T val, int index) {
 		// Time Complexity O(1)->O(n).
 		if (index < 0 || index > filled)
-			// Maybe throw Out of Bounds Exception.
+			// Maybe throw a std::out_of_range("Index: " << index << " Size: " << filled);
 			return false;
 		if (index == filled)
 			return this->append(val);
@@ -112,10 +112,10 @@ public:
 		}
 		if (this->items != NULL) {
 			// Copy the memory from the backup in sections. Before the index and after the index.
-			std::memcpy(this->items, backup, index * sizeof(T));
-			std::memcpy(this->items + index + 1, backup + index, (filled - index) * sizeof(T));
+			std::copy(backup, backup + index-1, this->items);
+			std::copy(backup + index, backup + filled, this->items + index + 1);
 		} else {
-			// Maybe throw an Out of Memory Exception.
+			// Maybe throw std::bad_alloc("ArrayList Could not Allocate New Array.");
 			this->items = backup;
 			return false;
 		}
@@ -129,9 +129,9 @@ public:
 	virtual T remove(int index) {
 		// Time Complexity O(1)->O(n).
 		if (index < 0 || index >= filled)
-			throw "Index Out of Bounds Exception";
+			throw std::out_of_range("Index: " + std::to_string(index) + " Size: " + std::to_string(filled));
 		T t = items[index];
-		std::memcpy(this->items + index, this->items + index+1, (this->filled - index) * sizeof(T));
+		std::copy(this->items + index + 1, this->items + filled, this->items + index);
 		filled--;
 		return t;
 	}
@@ -139,7 +139,7 @@ public:
 	virtual T& get(int index) {
 		// Time Complexity O(1).
 		if (index < 0 || index >= filled)
-			throw "Index Out of Bounds Exception";
+			throw std::out_of_range("Index: " + std::to_string(index) + " Size: " + std::to_string(filled));
 		return items[index];
 	}
 

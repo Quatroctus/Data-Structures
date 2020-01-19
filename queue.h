@@ -71,6 +71,7 @@ public:
 			
 			return true;
 		} else
+			// Maybe throw a std::bad_alloc exception.
 			return false;
 	}
 
@@ -87,6 +88,8 @@ public:
 	virtual T peak() {
 		// Get value from node, but don't remove.
 		// Time Complexity O(1).
+		if (head == NULL)
+			throw std::length_error("Cannot Peak From an Empty Queue.");
 		return head->t;
 	}
 
@@ -104,9 +107,7 @@ public:
 
 	virtual bool enqueue(T val) {
 		// Append to end of array and increase array size when necessary.
-		this->append(val);
-		std::cout << "Allocated size: " << this->allocatedSize() << std::endl;
-		return true;
+		return this->append(val);
 	}
 
 	virtual T dequeue() {
@@ -116,6 +117,8 @@ public:
 
 	virtual T peak() {
 		// Get first value from array but don't remove.
+		if (this->filled == 0)
+			throw std::length_error("Cannot Peak From an Empty Queue.");
 		return this->get(0);
 	}
 
