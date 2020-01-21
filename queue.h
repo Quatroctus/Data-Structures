@@ -23,7 +23,7 @@ struct Queue {
 	
 	@return The front value of the Queue.
 	*/
-	virtual T peak() = 0;
+	virtual T peek() = 0;
 
 };
 
@@ -85,7 +85,7 @@ public:
 		return val;
 	}
 
-	virtual T peak() {
+	virtual T peek() {
 		// Get value from node, but don't remove.
 		// Time Complexity O(1).
 		if (head == NULL)
@@ -115,7 +115,7 @@ public:
 		return this->remove(0);
 	}
 
-	virtual T peak() {
+	virtual T peek() {
 		// Get first value from array but don't remove.
 		if (this->filled == 0)
 			throw std::length_error("Cannot Peak From an Empty Queue.");

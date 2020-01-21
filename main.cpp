@@ -33,13 +33,13 @@ void testNodeQueue() {
 		queue->enqueue(i);
 	}
 
-	std::cout << "Peak After Initial Queuing: " << queue->peak() << std::endl;
+	std::cout << "peek After Initial Queuing: " << queue->peek() << std::endl;
 
 	for (int i = 0; i < 5; i++) {
 		std::cout << "Dequeued: " << queue->dequeue() << std::endl;
-		std::cout << "Peak After Dequeue: " << queue->peak() << std::endl;
+		std::cout << "peek After Dequeue: " << queue->peek() << std::endl;
 		std::cout << "Queuing was " << (queue->enqueue(i) ? "successful." : "failure") << std::endl;
-		std::cout << "Peak After enqueue: " << queue->peak() << std::endl;
+		std::cout << "peek After enqueue: " << queue->peek() << std::endl;
 	}
 	delete queue;
 }
@@ -51,13 +51,13 @@ void testArrayQueue() {
 		queue->enqueue(i);
 	}
 
-	std::cout << "Peak After Initial Queuing: " << queue->peak() << std::endl;
+	std::cout << "peek After Initial Queuing: " << queue->peek() << std::endl;
 
 	for (int i = 0; i < 5; i++) {
 		std::cout << "Dequeued: " << queue->dequeue() << std::endl;
-		std::cout << "Peak After Dequeue: " << queue->peak() << std::endl;
+		std::cout << "peek After Dequeue: " << queue->peek() << std::endl;
 		std::cout << "Queuing was " << (queue->enqueue(i) ? "successful." : "failure") << std::endl;
-		std::cout << "Peak After enqueue: " << queue->peak() << std::endl;
+		std::cout << "peek After enqueue: " << queue->peek() << std::endl;
 	}
 	delete queue;
 }
