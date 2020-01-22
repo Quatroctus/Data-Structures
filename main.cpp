@@ -64,8 +64,34 @@ void testArrayQueue() {
 
 void testArrayList() {
 	List<int> *list = new ArrayList<int>();
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < 10; i++) {
 		list->append(i);
+		std::cout << "Index: " << i << " Value: " << list->get(i) << std::endl;
+	}
+
+	std::cout << "Inserting at 4 was: " << (list->insert(1000, 4) ? "successful." : "failure.") << std::endl;
+	std::cout << "Inserting at 12 was: " << (list->insert(3000, 12) ? "successful." : "failure.") << std::endl;
+	std::cout << "Inserting at 11 was: " << (list->insert(2000, 11) ? "successful." : "failure.") << std::endl;
+
+	for (int i = 0; i < list->size(); i++)
+		std::cout << "Index: " << i << " Value: " << list->get(i) << std::endl;
+
+	std::cout << "Removed " << list->remove(6) << " at index 6." << std::endl;
+
+	for (int i = 0; i < list->size(); i++)
+		std::cout << "Index: " << i << " Value: " << list->get(i) << std::endl;
+
+	std::cout << "Size: " << list->size() << std::endl;
+
+	delete list;
+}
+
+void testNodeList() {
+	List<int> *list = new NodeList<int>();
+	for (int i = 0; i < 10; i++) {
+		list->append(i);
+		std::cout << "Index: " << i << " Value: " << list->get(i) << std::endl;
+	}
 
 	std::cout << "Inserting at 4 was: " << (list->insert(1000, 4) ? "successful." : "failure.") << std::endl;
 	std::cout << "Inserting at 12 was: " << (list->insert(3000, 12) ? "successful." : "failure.") << std::endl;
@@ -85,8 +111,9 @@ void testArrayList() {
 }
 
 int main(void) {
-	std::cout << "Testing Node Queue" << std::endl;
-	testNodeQueue();
-	std::cout << std::endl << std::endl << "Testing Array Queue" << std::endl;
-	testArrayQueue();
+	//std::cout << "Testing Node Queue" << std::endl;
+	//testNodeQueue();
+	//std::cout << std::endl << std::endl << "Testing Array Queue" << std::endl;
+	//testArrayQueue();
+	testNodeList();
 }

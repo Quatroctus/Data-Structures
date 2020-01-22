@@ -1,4 +1,5 @@
 #pragma once
+#include "node.h"
 #include <memory>
 
 template <typename T>
@@ -44,23 +45,103 @@ public:
 	@param index The index of the value you want.
 	@return The value at the specified index.
 	*/
-	virtual T& get(int index) = 0;
+	virtual T &get(int index) = 0;
 	/**
 	@return The filled size of the List.
 	*/
 	virtual int size() = 0;
-
-	/**
-	@return The allocated size of this List.
-	*/
-	inline int allocatedSize() { return this->length; }
-
-protected:
-	int length = 1;
 };
 
 template <typename T>
-class ArrayList: public List<T> {
+class NodeList : public List<T> {
+public:
+	NodeList() {}
+	NodeList(T val) {
+		this->head = new Node<T>(val);
+		this->tail = this->head;
+		this->count = 1;
+	}
+	~NodeList() {
+		Node<T> *next;
+		// Oddly enough this doesn't seem to output when delete is used. Better ask Joeseph about it.
+		std::cout << "Deconstructing NodeList" << std::endl;
+		while (head != NULL) {
+			next = this->head->node;
+			delete this->head;
+			this->head = next;
+		}
+	}
+
+	virtual bool append(T val) {
+		Node<T> *next = new Node<T>(val);
+		if (next != NULL) {
+			if (head == NULL) {
+				this->head = next;
+				this->tail = next;
+			} else {
+				this->tail->node = next;
+				this->tail = next;
+			}
+			this->count++;
+			return true;
+		} else {
+			// Maybe throw std::bad_alloc("ArrayList Could not Allocate New Array.");
+			return false;
+		}
+	}
+
+	virtual bool insert(T val, int index) {
+		if (index == count)
+			return append(val);
+		if (index > count || index < 0)
+			// Maybe throw a std::out_of_range("Index: " << index << " Size: " << filled);
+			return false;
+		Node<T> *inserted = new Node<T>(val);
+		if (inserted != NULL) {
+			Node<T> *prev = head;
+			for (int i = 0; i < index - 1; i++)
+				prev = prev->node;
+			inserted->node = prev->node;
+			prev->node = inserted;
+			this->count++;
+			return true;
+		} else {
+			// Maybe throw std::bad_alloc("ArrayList Could not Allocate New Array.");
+			return false;
+		}
+	}
+
+	virtual T remove(int index) {
+		if (index > count || index < 0)
+			// Maybe throw a std::out_of_range("Index: " << index << " Size: " << filled);
+			return false;
+		Node<T> *prev = head;
+		for (int i = 0; i < index - 1; i++)
+			prev = prev->node;
+		Node<T> *removal = prev->node;
+		prev->node = removal->node;
+		T t = removal->t;
+		delete removal;
+		this->count--;
+		return t;
+	}
+
+	virtual T &get(int index) {
+		Node<T> *node = head;
+		for (int i = 0; i < index; i++)
+			node = node->node;
+		return node->t;
+	}
+
+	inline virtual int size() { return count; }
+
+private:
+	int count = 0;
+	Node<T> *head = NULL, *tail = NULL;
+};
+
+template <typename T>
+class ArrayList : public List<T> {
 public:
 	ArrayList() {
 		this->resizeAmount = -1;
@@ -68,7 +149,7 @@ public:
 	}
 	ArrayList(int size) {
 		this->length = size;
-		this->items = (T*) calloc(size, sizeof(T));
+		this->items = (T *) calloc(size, sizeof(T));
 	}
 	ArrayList(int size, int resizeAmount) {
 		this->length = size;
@@ -76,7 +157,7 @@ public:
 		this->items = (T *) calloc(size, sizeof(T));
 	}
 	~ArrayList() {
-		delete []this->items;
+		delete[] this->items;
 	}
 
 	virtual bool append(T val) {
@@ -87,7 +168,7 @@ public:
 			this->items = (T *) calloc(this->length, sizeof(T));
 			if (items != NULL) {
 				std::copy(backup, backup + filled, this->items);
-				delete []backup;
+				delete[] backup;
 			} else {
 				// Maybe throw std::bad_alloc("ArrayList Could not Allocate New Array.");
 				return false;
@@ -108,11 +189,11 @@ public:
 		T *backup = this->items;
 		if (filled == this->length) {
 			this->length = resizeAmount < 0 ? this->length * 2 : this->length + resizeAmount;
-			this->items = (T *)calloc(this->length, sizeof(T));
+			this->items = (T *) calloc(this->length, sizeof(T));
 		}
 		if (this->items != NULL) {
 			// Copy the memory from the backup in sections. Before the index and after the index.
-			std::copy(backup, backup + index-1, this->items);
+			std::copy(backup, backup + index - 1, this->items);
 			std::copy(backup + index, backup + filled, this->items + index + 1);
 		} else {
 			// Maybe throw std::bad_alloc("ArrayList Could not Allocate New Array.");
@@ -136,7 +217,7 @@ public:
 		return t;
 	}
 
-	virtual T& get(int index) {
+	virtual T &get(int index) {
 		// Time Complexity O(1).
 		if (index < 0 || index >= filled)
 			throw std::out_of_range("Index: " + std::to_string(index) + " Size: " + std::to_string(filled));
@@ -146,6 +227,6 @@ public:
 	inline virtual int size() { return filled; }
 
 protected:
-	int filled = 0, resizeAmount;
+	int filled = 0, length = 0, resizeAmount;
 	T *items;
 };

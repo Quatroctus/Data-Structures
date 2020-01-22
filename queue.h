@@ -53,7 +53,6 @@ public:
 			delete this->head;
 			this->head = next;
 		}
-
 	}
 
 	virtual bool enqueue(T val) {
