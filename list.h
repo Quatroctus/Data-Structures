@@ -135,7 +135,7 @@ public:
 
 	inline virtual int size() { return count; }
 
-private:
+protected:
 	int count = 0;
 	Node<T> *head = NULL, *tail = NULL;
 };
@@ -145,16 +145,16 @@ class ArrayList : public List<T> {
 public:
 	ArrayList() {
 		this->resizeAmount = -1;
-		this->items = (T *) calloc(this->length, sizeof(T));
+		this->items = new T[this->length];
 	}
 	ArrayList(int size) {
 		this->length = size;
-		this->items = (T *) calloc(size, sizeof(T));
+		this->items = new T[this->length];
 	}
 	ArrayList(int size, int resizeAmount) {
 		this->length = size;
 		this->resizeAmount = resizeAmount;
-		this->items = (T *) calloc(size, sizeof(T));
+		this->items = new T[this->length];
 	}
 	~ArrayList() {
 		delete[] this->items;
@@ -165,7 +165,7 @@ public:
 		T *backup = this->items;
 		if (filled == this->length) {
 			this->length = resizeAmount < 0 ? this->length * 2 : this->length + resizeAmount;
-			this->items = (T *) calloc(this->length, sizeof(T));
+			this->items = new T[this->length];
 			if (items != NULL) {
 				std::copy(backup, backup + filled, this->items);
 				delete[] backup;
@@ -189,11 +189,12 @@ public:
 		T *backup = this->items;
 		if (filled == this->length) {
 			this->length = resizeAmount < 0 ? this->length * 2 : this->length + resizeAmount;
-			this->items = (T *) calloc(this->length, sizeof(T));
+			this->items = new T[this->length];
 		}
 		if (this->items != NULL) {
 			// Copy the memory from the backup in sections. Before the index and after the index.
-			std::copy(backup, backup + index - 1, this->items);
+			if (backup != items) // We only have to copy before the index if we created a new array.
+				std::copy(backup, backup + index - 1, this->items);
 			std::copy(backup + index, backup + filled, this->items + index + 1);
 		} else {
 			// Maybe throw std::bad_alloc("ArrayList Could not Allocate New Array.");
@@ -229,4 +230,102 @@ public:
 protected:
 	int filled = 0, length = 0, resizeAmount;
 	T *items;
+};
+
+template <typename T>
+bool defaultCompare(T inList, T value) {
+	return value < inList;
+}
+
+template <typename T>
+class SortedNodeList : public NodeList<T> {
+
+public:
+	SortedNodeList(): NodeList<T>() {}
+	SortedNodeList(bool (*compare)(T inList, T value)): NodeList<T>() {
+		this->compare = compare;
+	}
+	SortedNodeList(T val, bool (*compare)(T inList, T value)=defaultCompare): NodeList<T>(val) {
+		this->compare = compare;
+	}
+
+	virtual bool append(T val) {
+		switch (this->count) {
+		case 0:
+			return NodeList<T>::append(val);
+		case 1:
+			if (compare(NodeList<T>::head->t, val))
+				return NodeList<T>::insert(val, 0);
+			else
+				return NodeList<T>::append(val);
+		case 2:
+			if (compare(NodeList<T>::head->t, val))
+				return NodeList<T>::insert(val, 0);
+			else if (compare(NodeList<T>::tail->t, val))
+				return NodeList<T>::insert(val, 1);
+			else
+				return NodeList<T>::append(val);
+		default:
+			// TODO: Binary search then insert insertion.
+			break;
+		}
+	}
+
+	virtual bool insert(T val, int index) {
+		return this->append(val);
+	}
+
+protected:
+	// Returns true if the value should be to the left of inList.
+	bool (*compare)(T inList, T value) = defaultCompare;
+
+};
+
+template <typename T>
+class SortedArrayList : public ArrayList<T> {
+
+public:
+	SortedArrayList(): ArrayList<T>() {}
+	SortedArrayList(int size) : ArrayList<T>(size) {}
+	SortedArrayList(int size, int resizeAmount): ArrayList<T>(size, resizeAmount) {}
+	SortedArrayList(bool (*compare)(T inList, T value)): ArrayList<T>() {
+		this->compare = compare;
+	}
+	SortedArrayList(int size, bool (*compare)(T inlist, T value)): ArrayList<T>(size) {
+		this->compare = compare;
+	}
+	SortedArrayList(int size, int resizeAmount, bool (*compare)(T inList, T value)): ArrayList<T>(size, resizeAmount) {
+		this->compare = compare;
+	}
+
+	virtual bool append(T val) {
+		// Cover the base cases of 0, 1, 2 items already in the list.
+		switch (this->filled) {
+		case 0:
+			return ArrayList<T>::append(val);
+		case 1:
+			if (compare(this->items[0], val))
+				return ArrayList<T>::insert(val, 0);
+			else
+				return ArrayList<T>::append(val);
+		case 2:
+			if (compare(this->items[0], val))
+				return ArrayList<T>::insert(val, 0);
+			else if (compare(this->items[1], val))
+				return ArrayList<T>::insert(val, 1);
+			else
+				return ArrayList<T>::append(val);
+		default:
+			// TODO: Binary search then insert insertion.
+			break;
+		}
+	}
+
+	virtual bool insert(T val, int index) {
+		return this->append(val);
+	}
+
+protected:
+	// Returns true if the value should be to the left of inList.
+	bool (*compare)(T inList, T value) = defaultCompare;
 };
