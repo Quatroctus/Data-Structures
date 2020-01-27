@@ -98,11 +98,16 @@ public:
 			return false;
 		Node<T> *inserted = new Node<T>(val);
 		if (inserted != NULL) {
-			Node<T> *prev = head;
-			for (int i = 0; i < index - 1; i++)
-				prev = prev->node;
-			inserted->node = prev->node;
-			prev->node = inserted;
+			if (index == 0) {
+				inserted->node = this->head;
+				this->head = inserted;
+			} else {
+				Node<T> *prev = head;
+				for (int i = 0; i < index - 1; i++)
+					prev = prev->node;
+				inserted->node = prev->node;
+				prev->node = inserted;
+			}
 			this->count++;
 			return true;
 		} else {
@@ -194,7 +199,7 @@ public:
 		if (this->items != NULL) {
 			// Copy the memory from the backup in sections. Before the index and after the index.
 			if (backup != items) // We only have to copy before the index if we created a new array.
-				std::copy(backup, backup + index - 1, this->items);
+				std::copy(backup, backup + index, this->items);
 			std::copy(backup + index, backup + filled, this->items + index + 1);
 		} else {
 			// Maybe throw std::bad_alloc("ArrayList Could not Allocate New Array.");
@@ -228,7 +233,7 @@ public:
 	inline virtual int size() { return filled; }
 
 protected:
-	int filled = 0, length = 0, resizeAmount;
+	int filled = 0, length = 1, resizeAmount;
 	T *items;
 };
 
@@ -266,8 +271,29 @@ public:
 			else
 				return NodeList<T>::append(val);
 		default:
-			// TODO: Binary search then insert insertion.
-			break;
+			Node<T> *left = NULL;
+			Node<T> *right = this->head;
+			for (int i = 0; i < this->count; i++) {
+				if (compare(right->t, val)) {
+					Node<T> *node = new Node<T>(val);
+					if (node != NULL) {
+						node->node = right;
+						if (left == NULL)
+							this->head = node;
+						else
+							left->node = node;
+						this->count++;
+						return true;
+					} else
+						// Maybe throw std::bad_alloc("SortedNodeList Could not Allocate New Array.");
+						return false;
+				} else if (right->node == NULL) {
+					return NodeList<T>::append(val);
+				}
+				left = right;
+				right = right->node;
+			}
+			return false;
 		}
 	}
 
@@ -317,7 +343,7 @@ public:
 				return ArrayList<T>::append(val);
 		default:
 			// TODO: Binary search then insert insertion.
-			break;
+			return false;
 		}
 	}
 

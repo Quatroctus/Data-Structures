@@ -113,9 +113,19 @@ void testArrayList() {
 void testSortedNodeList() {
 	List<int> *list = new SortedNodeList<int>();
 
+	std::cout << "First 3" << std::endl;
+
 	list->append(100);
 	list->append(55);
 	list->append(10);
+
+	for (int i = 0; i < list->size(); i++)
+		std::cout << list->get(i) << std::endl;
+	
+	std::cout << "Next 7" << std::endl;
+
+	for (int i = 0; i < 7; i++)
+		list->append(i * 20);
 
 	for (int i = 0; i < list->size(); i++)
 		std::cout << list->get(i) << std::endl;
@@ -126,9 +136,19 @@ void testSortedNodeList() {
 void testSortedArrayList() {
 	List<int> *list = new SortedArrayList<int>();
 
+	std::cout << "First 3" << std::endl;
+
 	list->append(100);
 	list->append(10);
 	list->append(55);
+
+	for (int i = 0; i < list->size(); i++)
+		std::cout << list->get(i) << std::endl;
+
+	std::cout << "Next 7" << std::endl;
+
+	for (int i = 0; i < 7; i++)
+		list->append(i * 20);
 
 	for (int i = 0; i < list->size(); i++)
 		std::cout << list->get(i) << std::endl;
@@ -141,4 +161,9 @@ int main(void) {
 	testNodeList();
 	std::cout << std::endl << std::endl << "Testing ArrayList" << std::endl;
 	testArrayList();
+
+	/*std::cout << "Testing NodeList" << std::endl;
+	testSortedNodeList();
+	std::cout << std::endl << std::endl << "Testing ArrayList" << std::endl;
+	testSortedArrayList();*/
 }
