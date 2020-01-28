@@ -92,7 +92,7 @@ public:
 
 	virtual bool insert(T val, int index) {
 		if (index == count)
-			return append(val);
+			return NodeList<T>::append(val);
 		if (index > count || index < 0)
 			// Maybe throw a std::out_of_range("Index: " << index << " Size: " << filled);
 			return false;
@@ -190,7 +190,7 @@ public:
 			// Maybe throw a std::out_of_range("Index: " << index << " Size: " << filled);
 			return false;
 		if (index == filled)
-			return this->append(val);
+			return ArrayList<T>::append(val);
 		T *backup = this->items;
 		if (filled == this->length) {
 			this->length = resizeAmount < 0 ? this->length * 2 : this->length + resizeAmount;
@@ -238,19 +238,19 @@ protected:
 };
 
 template <typename T>
-bool defaultCompare(T inList, T value) {
-	return value < inList;
+int defaultCompare(T inList, T value) {
+	return value < inList ? -1 : value == inList ? 0 : 1;
 }
 
 template <typename T>
 class SortedNodeList : public NodeList<T> {
 
 public:
-	SortedNodeList(): NodeList<T>() {}
-	SortedNodeList(bool (*compare)(T inList, T value)): NodeList<T>() {
+	SortedNodeList() : NodeList<T>() {}
+	SortedNodeList(bool (*compare)(T inList, T value)) : NodeList<T>() {
 		this->compare = compare;
 	}
-	SortedNodeList(T val, bool (*compare)(T inList, T value)=defaultCompare): NodeList<T>(val) {
+	SortedNodeList(T val, bool (*compare)(T inList, T value) = defaultCompare) : NodeList<T>(val) {
 		this->compare = compare;
 	}
 
@@ -259,14 +259,14 @@ public:
 		case 0:
 			return NodeList<T>::append(val);
 		case 1:
-			if (compare(NodeList<T>::head->t, val))
+			if (compare(NodeList<T>::head->t, val) < 0)
 				return NodeList<T>::insert(val, 0);
 			else
 				return NodeList<T>::append(val);
 		case 2:
-			if (compare(NodeList<T>::head->t, val))
+			if (compare(NodeList<T>::head->t, val) < 0)
 				return NodeList<T>::insert(val, 0);
-			else if (compare(NodeList<T>::tail->t, val))
+			else if (compare(NodeList<T>::tail->t, val) < 0)
 				return NodeList<T>::insert(val, 1);
 			else
 				return NodeList<T>::append(val);
@@ -274,7 +274,7 @@ public:
 			Node<T> *left = NULL;
 			Node<T> *right = this->head;
 			for (int i = 0; i < this->count; i++) {
-				if (compare(right->t, val)) {
+				if (compare(right->t, val) < 0) {
 					Node<T> *node = new Node<T>(val);
 					if (node != NULL) {
 						node->node = right;
@@ -302,25 +302,24 @@ public:
 	}
 
 protected:
-	// Returns true if the value should be to the left of inList.
-	bool (*compare)(T inList, T value) = defaultCompare;
-
+	// Returns < 0 if value should be to the left, 0 if value is the same, > 0 if value should go to the right.
+	int (*compare)(T inList, T value) = defaultCompare;
 };
 
 template <typename T>
 class SortedArrayList : public ArrayList<T> {
 
 public:
-	SortedArrayList(): ArrayList<T>() {}
+	SortedArrayList() : ArrayList<T>() {}
 	SortedArrayList(int size) : ArrayList<T>(size) {}
-	SortedArrayList(int size, int resizeAmount): ArrayList<T>(size, resizeAmount) {}
-	SortedArrayList(bool (*compare)(T inList, T value)): ArrayList<T>() {
+	SortedArrayList(int size, int resizeAmount) : ArrayList<T>(size, resizeAmount) {}
+	SortedArrayList(bool (*compare)(T inList, T value)) : ArrayList<T>() {
 		this->compare = compare;
 	}
-	SortedArrayList(int size, bool (*compare)(T inlist, T value)): ArrayList<T>(size) {
+	SortedArrayList(int size, bool (*compare)(T inlist, T value)) : ArrayList<T>(size) {
 		this->compare = compare;
 	}
-	SortedArrayList(int size, int resizeAmount, bool (*compare)(T inList, T value)): ArrayList<T>(size, resizeAmount) {
+	SortedArrayList(int size, int resizeAmount, bool (*compare)(T inList, T value)) : ArrayList<T>(size, resizeAmount) {
 		this->compare = compare;
 	}
 
@@ -330,20 +329,35 @@ public:
 		case 0:
 			return ArrayList<T>::append(val);
 		case 1:
-			if (compare(this->items[0], val))
+			if (compare(this->items[0], val) < 0)
 				return ArrayList<T>::insert(val, 0);
 			else
 				return ArrayList<T>::append(val);
 		case 2:
-			if (compare(this->items[0], val))
+			if (compare(this->items[0], val) < 0)
 				return ArrayList<T>::insert(val, 0);
-			else if (compare(this->items[1], val))
+			else if (compare(this->items[1], val) < 0)
 				return ArrayList<T>::insert(val, 1);
 			else
 				return ArrayList<T>::append(val);
 		default:
-			// TODO: Binary search then insert insertion.
-			return false;
+			// Binary search then insert insertion.
+			int left = 0, right = this->filled;
+			int current = right / 2;
+			while (left != current && right != current) {
+				int comparison = compare(this->get(current), val);
+				if (comparison == 0)
+					break;
+				else if (comparison < 0) {
+					right = current;
+					current = left + ((current - left) / 2);
+				} else {
+					left = current;
+					current += (right - current) / 2;
+				}
+			}
+			int comparison = compare(this->get(current), val);
+			return ArrayList<T>::insert(val, comparison <= 0 ? current : current + 1);
 		}
 	}
 
@@ -352,6 +366,6 @@ public:
 	}
 
 protected:
-	// Returns true if the value should be to the left of inList.
-	bool (*compare)(T inList, T value) = defaultCompare;
+	// Returns < 0 if value should be to the left, 0 if value is the same, > 0 if value should go to the right.
+	int (*compare)(T inList, T value) = defaultCompare;
 };

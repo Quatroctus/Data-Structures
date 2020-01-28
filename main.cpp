@@ -162,8 +162,8 @@ int main(void) {
 	std::cout << std::endl << std::endl << "Testing ArrayList" << std::endl;
 	testArrayList();
 
-	/*std::cout << "Testing NodeList" << std::endl;
+	std::cout << std::endl << std::endl << "Testing SortedNodeList" << std::endl;
 	testSortedNodeList();
-	std::cout << std::endl << std::endl << "Testing ArrayList" << std::endl;
-	testSortedArrayList();*/
+	std::cout << std::endl << std::endl << "Testing SortedArrayList" << std::endl;
+	testSortedArrayList();
 }
