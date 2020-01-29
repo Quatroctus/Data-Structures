@@ -1,6 +1,6 @@
 #pragma once
-#include "node.h"
-#include "list.h"
+#include "nodelist.h"
+#include "arraylist.h"
 
 template<typename T>
 struct Queue {
@@ -28,94 +28,34 @@ struct Queue {
 };
 
 template<typename T>
-class NodeQueue: public Queue<T> {
-
-public:
-	NodeQueue() {
-		head = NULL;
-		tail = NULL;
-	}
-	NodeQueue(T val) {
-		head = new Node<T>(val);
-		tail = NULL;
-	}
-	NodeQueue(T val, Node<T> *tail) {
-		this->tail = tail;
-		head = new Node<T>(val, tail);
-	}
-	// Maybe a copy constructor.
-	~NodeQueue() {
-		Node<T> *next;
-		// Oddly enough this doesn't seem to output when delete is used. Better ask Joeseph about it.
-		std::cout << "Deconstructing NodeQueue" << std::endl;
-		while (head != NULL) {
-			next = this->head->node;
-			delete this->head;
-			this->head = next;
-		}
+struct NodeQueue : public Queue<T>, protected NodeList<T> {
+	bool enqueue(T val) override {
+		return NodeList<T>::append(val);
 	}
 
-	virtual bool enqueue(T val) {
-		// Construct Node<T> and make it the tail.
-		// Time Complexity O(1).
-		Node<T>*node = new Node<T>(val);
-		if (node != NULL) {
-			if (tail != NULL) {
-				tail->node = node;
-				tail = node;
-			} else {
-				this->head = node;
-				this->tail = node;
-			}
-			
-			return true;
-		} else
-			// Maybe throw a std::bad_alloc exception.
-			return false;
+	T dequeue() override {
+		return NodeList<T>::remove(0);
 	}
 
-	virtual T dequeue() {
-		// Get value from Node head and update the head.
-		// Time Complexity O(1).
-		Node<T> *next = head->node;
-		T val = head->t;
-		delete head;
-		head = next;
-		return val;
+	T peek() override {
+		return NodeList<T>::get(0);
 	}
-
-	virtual T peek() {
-		// Get value from node, but don't remove.
-		// Time Complexity O(1).
-		if (head == NULL)
-			throw std::length_error("Cannot Peak From an Empty Queue.");
-		return head->t;
-	}
-
-private:
-	Node<T> *head, *tail;
 };
 
 template <typename T>
-class ArrayQueue: public Queue<T>, private ArrayList<T> {
-
-public:
+struct ArrayQueue : public Queue<T>, private ArrayList<T> {
 	ArrayQueue(): ArrayList<T>(1, 1) {}
 	ArrayQueue(int size): ArrayList<T>(size, 1){}
-	// Maybe a copy constructor.
 
-	virtual bool enqueue(T val) {
-		// Append to end of array and increase array size when necessary.
+	bool enqueue(T val) override {
 		return this->append(val);
 	}
 
-	virtual T dequeue() {
-		// Get value from array and shift array.
+	T dequeue() override {
 		return this->remove(0);
 	}
 
-	virtual T peek() {
-		// Get first value from array but don't remove.
+	T peek() override {
 		if (this->filled == 0)
 			throw std::length_error("Cannot Peak From an Empty Queue.");
 		return this->get(0);

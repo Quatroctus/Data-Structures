@@ -138,10 +138,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="arraylist.h" />
     <ClInclude Include="list.h" />
+    <ClInclude Include="lists.h" />
     <ClInclude Include="MarbleBag.h" />
     <ClInclude Include="node.h" />
+    <ClInclude Include="nodelist.h" />
     <ClInclude Include="queue.h" />
+    <ClInclude Include="sortedarraylist.h" />
+    <ClInclude Include="sortedlists.h" />
+    <ClInclude Include="sortednodelist.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
