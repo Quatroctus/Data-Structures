@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 #include "list.h"
 
 template <typename T>

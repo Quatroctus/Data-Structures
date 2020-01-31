@@ -148,6 +148,7 @@
     <ClInclude Include="sortedarraylist.h" />
     <ClInclude Include="sortedlists.h" />
     <ClInclude Include="sortednodelist.h" />
+    <ClInclude Include="tree.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />

@@ -1,13 +1,14 @@
+#include "MarbleBag.h"
+#include "lists.h"
+#include "queue.h"
+#include "tree.h"
 #include <iostream>
 #include <random>
 #include <string>
 #include <time.h>
-#include "MarbleBag.h"
-#include "lists.h"
-#include "queue.h"
 
 void testMarbles() {
-	srand((unsigned int)time(nullptr));
+	srand((unsigned int) time(nullptr));
 	MarbleBag<std::string> bag = MarbleBag<std::string>(100);
 
 	std::string MARBLES[3] = { "red", "green", "blue" };
@@ -121,7 +122,7 @@ void testSortedNodeList() {
 
 	for (int i = 0; i < list->size(); i++)
 		std::cout << list->get(i) << std::endl;
-	
+
 	std::cout << "Next 7" << std::endl;
 
 	for (int i = 0; i < 7; i++)
@@ -156,14 +157,20 @@ void testSortedArrayList() {
 	delete list;
 }
 
-int main(void) {
-	std::cout << "Testing NodeList" << std::endl;
-	testNodeList();
-	std::cout << std::endl << std::endl << "Testing ArrayList" << std::endl;
-	testArrayList();
+void testBinarySearchTree() {
+	Tree<int> *tree = new BinarySearchTree<int>(90);
+	int values[11] = {10, 20, 0, 30, 40, 50, 60, 70, 80, 100};
 
-	std::cout << std::endl << std::endl << "Testing SortedNodeList" << std::endl;
-	testSortedNodeList();
-	std::cout << std::endl << std::endl << "Testing SortedArrayList" << std::endl;
-	testSortedArrayList();
+	for (auto& val : values) {
+		tree->append(val);
+	}
+
+	for (int i = 0; i < 11; i++) {
+		std::cout << "Value " << tree->get(i) << " at " << i << std::endl;
+	}
+
+}
+
+int main(void) {
+	testBinarySearchTree();
 }
