@@ -42,6 +42,7 @@ void testNodeQueue() {
 		std::cout << "Queuing was " << (queue->enqueue(i) ? "successful." : "failure") << std::endl;
 		std::cout << "peek After enqueue: " << queue->peek() << std::endl;
 	}
+
 	delete queue;
 }
 
@@ -60,6 +61,7 @@ void testArrayQueue() {
 		std::cout << "Queuing was " << (queue->enqueue(i) ? "successful." : "failure") << std::endl;
 		std::cout << "peek After enqueue: " << queue->peek() << std::endl;
 	}
+
 	delete queue;
 }
 
@@ -159,16 +161,19 @@ void testSortedArrayList() {
 
 void testBinarySearchTree() {
 	Tree<int> *tree = new BinarySearchTree<int>(90);
-	int values[11] = {10, 20, 0, 30, 40, 50, 60, 70, 80, 100};
+	int values[10] = {10, 20, 0, 30, 40, 50, 60, 70, 80, 100};
 
-	for (auto& val : values) {
+	for (auto& val : values)
 		tree->append(val);
-	}
 
-	for (int i = 0; i < 11; i++) {
+	for (int i = 0; i < 11; i++)
 		std::cout << "Value " << tree->get(i) << " at " << i << std::endl;
-	}
+	
+	// TODO: Finish the test after the restructuring.
 
+	// We have to manually call Tree::destroyTree() in order to free all the memory from this Tree.
+	// Because we defined our tree as a recursive data-type. If we instead had a container which contained a BiNode *root.
+	tree->destroyTree();
 }
 
 int main(void) {
