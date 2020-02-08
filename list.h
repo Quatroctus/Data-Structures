@@ -3,6 +3,7 @@
 
 template <typename T>
 struct List {
+	virtual ~List() {}
 	/**
 	Appends a value to the back of this List.
 	

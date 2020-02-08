@@ -4,7 +4,8 @@
 
 template<typename T>
 struct Queue {
-	
+	virtual ~Queue() {}
+
 	/**
 	Adds a value to the back of the Queue.
 	 
@@ -29,6 +30,10 @@ struct Queue {
 
 template<typename T>
 struct NodeQueue : public Queue<T>, protected NodeList<T> {
+	~NodeQueue() override {
+		NodeList<T>::~NodeList();
+	}
+
 	bool enqueue(T val) override {
 		return NodeList<T>::append(val);
 	}
@@ -43,9 +48,12 @@ struct NodeQueue : public Queue<T>, protected NodeList<T> {
 };
 
 template <typename T>
-struct ArrayQueue : public Queue<T>, private ArrayList<T> {
+struct ArrayQueue : public Queue<T>, protected ArrayList<T> {
 	ArrayQueue(): ArrayList<T>(1, 1) {}
 	ArrayQueue(int size): ArrayList<T>(size, 1){}
+	~ArrayQueue() override {
+		ArrayList<T>::~ArrayList();
+	}
 
 	bool enqueue(T val) override {
 		return this->append(val);

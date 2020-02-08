@@ -18,8 +18,8 @@ public:
 		this->resizeAmount = resizeAmount;
 		this->items = new T[this->length];
 	}
-	~ArrayList() {
-		delete[] this->items;
+	~ArrayList() override {
+		delete[] items;
 	}
 
 	bool append(T val) override {
