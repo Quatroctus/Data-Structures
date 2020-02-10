@@ -160,7 +160,7 @@ void testSortedArrayList() {
 }
 
 void testBinarySearchTree() {
-	Tree<int> *tree = new BinarySearchTree<int>(90);
+	Tree<int, BinarySearchTree<int>> *tree = new BinarySearchTree<int>(90);
 	int values[10] = {10, 20, 0, 30, 40, 50, 60, 70, 80, 100};
 
 	for (auto& val : values)
@@ -169,13 +169,77 @@ void testBinarySearchTree() {
 	for (int i = 0; i < 11; i++)
 		std::cout << "Value " << tree->get(i) << " at " << i << std::endl;
 	
-	// TODO: Finish the test after the restructuring.
+	std::cout << "Pre-Order" << std::endl;
+	tree->print(std::cout, BinarySearchTree<int>::PRE_ORDER);
+	std::cout << std::endl;
+
+	std::cout << "Post-Order" << std::endl;
+	tree->print(std::cout, BinarySearchTree<int>::POST_ORDER);
+	std::cout << std::endl;
+
+	std::cout << "In-Order" << std::endl;
+	tree->print(std::cout, BinarySearchTree<int>::IN_ORDER);
+	std::cout << std::endl;
+
+	tree->remove(3); // Should remove the value 30 from the tree because it is at the 3rd index in sorted order.
+
+	std::cout << "Remove position 3" << std::endl;
+	tree->print(std::cout, BinarySearchTree<int>::IN_ORDER);
+	std::cout << std::endl;
+
+	tree->removeValue(50); // Should remove the value 50 from the tree.
+
+	std::cout << "Remove value 50" << std::endl;
+	tree->print(std::cout, BinarySearchTree<int>::IN_ORDER);
+	std::cout << std::endl;
+
+	tree->removeValue(90); // Remove the root with both left and right attachments. Should move the right to the root.
+
+	std::cout << "Remove root: 90" << std::endl;
+	tree->print(std::cout, BinarySearchTree<int>::IN_ORDER);
+	std::cout << std::endl;
+
+	tree->removeValue(100); // Remove the root with only a left. Should move the left to the root.
+
+	std::cout << "Remove root: 100" << std::endl;
+	tree->print(std::cout, BinarySearchTree<int>::IN_ORDER);
+	std::cout << std::endl;
+
+	tree->removeValue(80); // Remove a value at the end of a branch.
+
+	std::cout << "Remove 80" << std::endl;
+	tree->print(std::cout, BinarySearchTree<int>::IN_ORDER);
+	std::cout << std::endl;
 
 	// We have to manually call Tree::destroyTree() in order to free all the memory from this Tree.
-	// Because we defined our tree as a recursive data-type. If we instead had a container which contained a BiNode *root.
+	// Because we defined our tree as a recursive data-type. If we instead had a container which contained a BiNode *root we could just call delete tree to handle it.
 	tree->destroyTree();
 }
 
+#include "MemoryManager.h"
+
 int main(void) {
-	testBinarySearchTree();
+	managed_ptr<int> ptr = MemoryManager::allocate<int>(100); // Should allocate 100 integers.
+	ptr[0] = 10;
+	ptr[1] = 256;
+
+	std::cout << ptr[0] << std::endl;
+	std::cout << ptr[1] << std::endl;
+	std::cout << ptr[2] << std::endl;
+	//std::cout << ptr[100] << std::endl; // Should throw exception.
+
+	//std::cout << ptr << std::endl; // Maybe overload the << operator.
+	std::cout << (ptr + 0) << std::endl;
+
+	ptr.~managed_ptr();
+
+	ptr = MemoryManager::allocate<int>(100);
+
+	std::cout << ptr[0] << std::endl;
+	std::cout << ptr[1] << std::endl;
+	std::cout << ptr[2] << std::endl;
+
+	std::cout << (ptr + 0) << std::endl;
+
+	// testBinarySearchTree();
 }

@@ -5,78 +5,32 @@
 // TODO: Restructure this whole file. Move the BinarySearchTree into it's own file.
 // TODO: Restructure the class dynamics/methods to include different traversal orders.
 // TODO: Potentially use a BiNode and container structure to make the BinarySearchTree.
-template <typename T>
+template <typename T, typename K>
 struct Tree : public List<T> {
 	virtual ~Tree() {}
 
+	virtual void getTree(int index, K **prev, K **current, bool remove = false) = 0;
+	virtual bool search(T value, K **prev, K**curent, int *index = NULL, bool remove = false) = 0;
 	virtual bool removeValue(T val) = 0;
+	virtual void print(std::ostream &output, unsigned int order, unsigned int indent = 0) = 0;
+	virtual NodeList<T> &breadthFirst(NodeList<T> *list = new NodeList<T>()) = 0;
 
-	virtual void destroyTree() = 0;
-
-	virtual void print(std::ostream &output, unsigned int indent) = 0;
-
-	friend std::ostream &operator<<(std::ostream &output, Tree<T> &tree) {
-		tree.print(output, 0);
-		return output;
+	virtual void destroyTree() {
+		this->~Tree();
 	}
 };
 
 template <typename T>
-class BinarySearchTree : public Tree<T> {
+class BinarySearchTree : public Tree<T, BinarySearchTree<T>> {
 
 	T value;
 	BinarySearchTree<T> *left = NULL, *right = NULL;
 	int count = 0;
 	int (*compare)(T inTree, T value) = defaultCompare;
 
-	void getTree(int index, BinarySearchTree<T> **prev, BinarySearchTree<T> **current, bool remove = false) {
-		if (index < 0 || index > count)
-			throw std::out_of_range("Index: " + std::to_string(index) + " Size: " + std::to_string(count));
-		if (remove)
-			this->count--;
-		if (left == NULL && index == 0 || left != NULL && left->count + 1 == index)
-			*current = this;
-		else if (left != NULL && left->count + 1 > index) {
-			*prev = this;
-			return left->getTree(index, prev, current, remove);
-		} else {
-			*prev = this;
-			return this->right->getTree((left != NULL ? (index - left->count) - 2 : index - 1), prev, current, remove);
-		}
-	}
-
-	// Searches for a specific value within the BinarySearchTree.
-	bool searchForTree(T val, BinarySearchTree<T> **prev, BinarySearchTree<T> **current, int *index = NULL, bool remove = false) {
-		int comparison = compare(this->value, val);
-		if (comparison == 0) {
-			*current = this;
-			return true;
-		} else if (comparison < 0) {
-			if (this->left != NULL) {
-				*prev = this;
-				if (index != NULL)
-					*index -= this->left->right != NULL ? this->left->right->count : 0;
-				bool found = this->left->searchForTree(val, prev, current);
-				if (found && remove)
-					this->count--;
-				return found;
-			} else
-				return false;
-		} else {
-			if (this->right != NULL) {
-				*prev = this;
-				if (index != NULL)
-					*index += this->right->left != NULL ? this->right->left->count : 0;
-				bool found = this->right->searchForTree(val, prev, current);
-				if (found && remove)
-					this->count--;
-				return found;
-			} else
-				return false;
-		}
-	}
-
 public:
+	static const unsigned int PRE_ORDER = 0, IN_ORDER = 1, POST_ORDER = 2;
+
 	BinarySearchTree(T val) : value(val) {}
 	BinarySearchTree(int (*compare)(T inTree, T value)) : compare(compare) {}
 	BinarySearchTree(T val, int (*compare)(T inTree, T value)) : value(val), compare(compare) {}
@@ -116,7 +70,7 @@ public:
 	bool removeValue(T val) override {
 		int index;
 		BinarySearchTree<T> *prev = NULL, *toBeRemoved;
-		if (searchForTree(val, &prev, &toBeRemoved, &index, true)) {
+		if (search(val, &prev, &toBeRemoved, &index, true)) {
 			bool leftOfPrev = prev != NULL ? prev->left == toBeRemoved : false;
 			if (prev != NULL && toBeRemoved->left == NULL && toBeRemoved->right == NULL) {
 				if (leftOfPrev)
@@ -253,12 +207,73 @@ public:
 		}
 	}
 
-	void print(std::ostream &output, unsigned int indent) override {
+	NodeList<T> &breadthFirst(NodeList<T> *list) override {
+		list->append(this->value);
 		if (this->left != NULL)
-			this->left->print(output, indent + 1);
-		output << std::string(size_t(indent) * 2, ' ') << ": " << value << std::endl;
+			this->left->breadthFirst(list);
 		if (this->right != NULL)
-			this->right->print(output, indent + 1);
+			this->right->breadthFirst(list);
+		return *list;
+	}
+
+	void getTree(int index, BinarySearchTree<T> **prev, BinarySearchTree<T> **current, bool remove = false) {
+		if (index < 0 || index > count)
+			throw std::out_of_range("Index: " + std::to_string(index) + " Size: " + std::to_string(count));
+		if (remove)
+			this->count--;
+		if (left == NULL && index == 0 || left != NULL && left->count + 1 == index)
+			*current = this;
+		else if (left != NULL && left->count + 1 > index) {
+			*prev = this;
+			return left->getTree(index, prev, current, remove);
+		} else {
+			*prev = this;
+			return this->right->getTree((left != NULL ? (index - left->count) - 2 : index - 1), prev, current, remove);
+		}
+	}
+
+	// Searches for a specific value within the BinarySearchTree.
+	bool search(T val, BinarySearchTree<T> **prev, BinarySearchTree<T> **current, int *index = NULL, bool remove = false) {
+		int comparison = compare(this->value, val);
+		if (comparison == 0) {
+			*current = this;
+			return true;
+		} else if (comparison < 0) {
+			if (this->left != NULL) {
+				*prev = this;
+				if (index != NULL)
+					*index -= this->left->right != NULL ? this->left->right->count : 0;
+				bool found = this->left->search(val, prev, current);
+				if (found && remove)
+					this->count--;
+				return found;
+			} else
+				return false;
+		} else {
+			if (this->right != NULL) {
+				*prev = this;
+				if (index != NULL)
+					*index += this->right->left != NULL ? this->right->left->count : 0;
+				bool found = this->right->search(val, prev, current);
+				if (found && remove)
+					this->count--;
+				return found;
+			} else
+				return false;
+		}
+	}
+
+	void print(std::ostream &output, unsigned int order, unsigned int indent) override {
+		if (order == BinarySearchTree::PRE_ORDER)
+			output << std::string(size_t(indent) * 2, ' ') << ": " << value << std::endl;
+		if (this->left != NULL)
+			this->left->print(output, order, indent + 1);
+		if (order == BinarySearchTree::IN_ORDER)
+			output << std::string(size_t(indent) * 2, ' ') << ": " << value << std::endl;
+		if (this->right != NULL)
+			this->right->print(output, order, indent + 1);
+		if (order == BinarySearchTree::POST_ORDER)
+			output << std::string(size_t(indent) * 2, ' ') << ": " << value << std::endl;
 	}
 
 	inline int size() override { return count; }

@@ -14,7 +14,7 @@ public:
 	~NodeList() override {
 		Node<T> *next;
 		while (head != NULL) {
-			next = this->head->node;
+			next = this->head->next;
 			delete this->head;
 			this->head = next;
 		}
@@ -27,7 +27,7 @@ public:
 				this->head = next;
 				this->tail = next;
 			} else {
-				this->tail->node = next;
+				this->tail->next = next;
 				this->tail = next;
 			}
 			this->count++;
@@ -47,14 +47,14 @@ public:
 		Node<T> *inserted = new Node<T>(val);
 		if (inserted != NULL) {
 			if (index == 0) {
-				inserted->node = this->head;
+				inserted->next = this->head;
 				this->head = inserted;
 			} else {
 				Node<T> *prev = head;
 				for (int i = 0; i < index - 1; i++)
-					prev = prev->node;
-				inserted->node = prev->node;
-				prev->node = inserted;
+					prev = prev->next;
+				inserted->next = prev->next;
+				prev->next = inserted;
 			}
 			this->count++;
 			return true;
@@ -69,18 +69,18 @@ public:
 			throw std::out_of_range("Index: " + std::to_string(index) + " Size: " + std::to_string(count));
 		if (index == 0) {
 			Node<T> *remove = head;
-			head = head->node;
-			T value = remove->t;
+			head = head->next;
+			T value = remove->value;
 			delete remove;
 			this->count--;
 			return value;
 		} else {
 			Node<T> *prev = head;
 			for (int i = 0; i < index - 1; i++)
-				prev = prev->node;
-			Node<T> *removal = prev->node;
-			prev->node = removal->node;
-			T t = removal->t;
+				prev = prev->next;
+			Node<T> *removal = prev->next;
+			prev->next = removal->next;
+			T t = removal->value;
 			delete removal;
 			this->count--;
 			return t;
@@ -92,8 +92,8 @@ public:
 			throw std::out_of_range("Index: " + std::to_string(index) + " Size: " + std::to_string(count));
 		Node<T> *node = head;
 		for (int i = 0; i < index; i++)
-			node = node->node;
-		return node->t;
+			node = node->next;
+		return node->value;
 	}
 
 	inline int size() override { return count; }

@@ -16,19 +16,18 @@ public:
 	}
 
 	void drop(Marble marble) {
-		Marble* marbleBackups = this->marbles;
+		Marble *marbleBackups = this->marbles;
 		bool resize = filled == size;
 		if (resize) {
-			this->marbles = new Marble[size == 0 ? 1 : size * 2];
+			size == 0 ? size = 1 : size *= 2;
+			this->marbles = new Marble[size];
 			for (unsigned int i = 0; i < filled; i++) {
 				this->marbles[i] = marbleBackups[i];
 			}
 		}
 		this->marbles[filled] = marble;
-		if (resize) {
-			size == 0 ? size = 1 : size *= 2;
+		if (resize)
 			delete[] marbleBackups;
-		}
 		filled++;
 	}
 
@@ -45,7 +44,7 @@ public:
 	}
 
 private:
-	unsigned int filled = 0, size = 0;
-	Marble *marbles = new Marble[0];
+	unsigned int filled = 0U, size = 0U;
+	Marble *marbles = new Marble[0U];
 
 };

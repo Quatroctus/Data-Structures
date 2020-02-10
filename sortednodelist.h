@@ -18,14 +18,14 @@ public:
 		case 0:
 			return NodeList<T>::append(val);
 		case 1:
-			if (compare(NodeList<T>::head->t, val) < 0)
+			if (compare(NodeList<T>::head->value, val) < 0)
 				return NodeList<T>::insert(val, 0);
 			else
 				return NodeList<T>::append(val);
 		case 2:
-			if (compare(NodeList<T>::head->t, val) < 0)
+			if (compare(NodeList<T>::head->value, val) < 0)
 				return NodeList<T>::insert(val, 0);
-			else if (compare(NodeList<T>::tail->t, val) < 0)
+			else if (compare(NodeList<T>::tail->value, val) < 0)
 				return NodeList<T>::insert(val, 1);
 			else
 				return NodeList<T>::append(val);
@@ -33,24 +33,24 @@ public:
 			Node<T> *left = NULL;
 			Node<T> *right = this->head;
 			for (int i = 0; i < this->count; i++) {
-				if (compare(right->t, val) < 0) {
+				if (compare(right->value, val) < 0) {
 					Node<T> *node = new Node<T>(val);
 					if (node != NULL) {
-						node->node = right;
+						node->next = right;
 						if (left == NULL)
 							this->head = node;
 						else
-							left->node = node;
+							left->next = node;
 						this->count++;
 						return true;
 					} else
 						// Maybe throw std::bad_alloc("SortedNodeList Could not Allocate New Array.");
 						return false;
-				} else if (right->node == NULL) {
+				} else if (right->next == NULL) {
 					return NodeList<T>::append(val);
 				}
 				left = right;
-				right = right->node;
+				right = right->next;
 			}
 			return false;
 		}
