@@ -216,30 +216,47 @@ void testBinarySearchTree() {
 	tree->destroyTree();
 }
 
+#define USE_BITSET true
 #include "MemoryManager.h"
 
 int main(void) {
+	std::cout << RANGE_START << std::endl;
 	managed_ptr<int> ptr = MemoryManager::allocate<int>(100); // Should allocate 100 integers.
+	managed_ptr<int> ptr2 = MemoryManager::allocate<int>(100);
+	managed_ptr<int> ptr3 = MemoryManager::allocate<int>(100);
 	ptr[0] = 10;
 	ptr[1] = 256;
 
 	std::cout << ptr[0] << std::endl;
 	std::cout << ptr[1] << std::endl;
 	std::cout << ptr[2] << std::endl;
-	//std::cout << ptr[100] << std::endl; // Should throw exception.
+	std::cout << ptr << std::endl;
 
-	//std::cout << ptr << std::endl; // Maybe overload the << operator.
-	std::cout << (ptr + 0) << std::endl;
+	ptr2[0] = 1000;
+	ptr2[1] = 1024;
 
-	ptr.~managed_ptr();
+	std::cout << ptr2[0] << std::endl;
+	std::cout << ptr2[1] << std::endl;
+	std::cout << ptr2[2] << std::endl;
+	std::cout << ptr2 << std::endl;
 
-	ptr = MemoryManager::allocate<int>(100);
+	ptr3[0] = 100000;
+	ptr3[1] = 4096;
 
-	std::cout << ptr[0] << std::endl;
-	std::cout << ptr[1] << std::endl;
-	std::cout << ptr[2] << std::endl;
+	std::cout << ptr3[0] << std::endl;
+	std::cout << ptr3[1] << std::endl;
+	std::cout << ptr3[2] << std::endl;
+	std::cout << ptr3 << std::endl;
 
-	std::cout << (ptr + 0) << std::endl;
+	ptr2.~managed_ptr();
+
+	ptr2 = MemoryManager::allocate<int>(100);
+
+	std::cout << ptr2[0] << std::endl;
+	std::cout << ptr2[1] << std::endl;
+	std::cout << ptr2[2] << std::endl;
+
+	std::cout << ptr2 << std::endl;
 
 	// testBinarySearchTree();
 }
