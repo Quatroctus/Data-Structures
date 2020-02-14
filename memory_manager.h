@@ -171,7 +171,7 @@ class MemoryManager {
 					bool free = !info->bits->test(j);
 					if (free && start == RANGE_START - 1)
 						start = j + RANGE_START;
-					else if (free && ((j + RANGE_START) - start) == byteSize) {
+					else if (free && ((j + RANGE_START) - start) == byteSize - 1) {
 						allocation = memoryChunks.at(i) + start;
 						for (j = 0; j < byteSize; j++) {
 							info->bits->set(j + start - RANGE_START, true);
