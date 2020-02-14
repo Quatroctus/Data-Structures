@@ -141,8 +141,8 @@
     <ClInclude Include="arraylist.h" />
     <ClInclude Include="list.h" />
     <ClInclude Include="lists.h" />
-    <ClInclude Include="MarbleBag.h" />
-    <ClInclude Include="MemoryManager.h" />
+    <ClInclude Include="marble_bag.h" />
+    <ClInclude Include="memory_manager.h" />
     <ClInclude Include="node.h" />
     <ClInclude Include="nodelist.h" />
     <ClInclude Include="queue.h" />
@@ -153,7 +153,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="MemoryManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".clang-format" />
