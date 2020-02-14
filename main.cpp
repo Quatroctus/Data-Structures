@@ -217,7 +217,7 @@ void testBinarySearchTree() {
 }
 
 //#define USE_BITSET
-#include "MemManager.h"
+#include "memory_manager.h"
 
 int main(void) {
 	std::cout << RANGE_START << std::endl;
