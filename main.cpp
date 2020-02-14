@@ -216,7 +216,8 @@ void testBinarySearchTree() {
 	tree->destroyTree();
 }
 
-//#define USE_BITSET
+#define USE_BITSET // Use a std::bitset to keep track of allocated and free locations.
+#define MEMORY_ALLOCATION 1224 // Request an allocation chunk size.
 #include "memory_manager.h"
 
 int main(void) {

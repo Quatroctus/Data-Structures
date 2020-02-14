@@ -15,7 +15,7 @@ using byte = unsigned char;
 
 constexpr size_t SIZE_T_SIZE = sizeof(size_t);
 #ifdef USE_BITSET
-constexpr size_t RANGE_START = MEMORY_ALLOCATION_SIZE / 8;
+const size_t RANGE_START = size_t(std::ceil(MEMORY_ALLOCATION_SIZE / 8.0));
 #else
 constexpr size_t RANGE_START = 0;
 #endif
