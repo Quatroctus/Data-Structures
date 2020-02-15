@@ -1,3 +1,7 @@
+#define USE_BITSET // Use a std::bitset to keep track of allocated and free locations.
+#define MEMORY_ALLOCATION 1272 // Request an allocation chunk size.
+#include "memory_manager.h"
+
 #include "marble_bag.h"
 #include "lists.h"
 #include "queue.h"
@@ -216,44 +220,43 @@ void testBinarySearchTree() {
 	tree->destroyTree();
 }
 
-#define USE_BITSET // Use a std::bitset to keep track of allocated and free locations.
-#define MEMORY_ALLOCATION 1272 // Request an allocation chunk size.
-#include "memory_manager.h"
-
 int main(void) {
-	std::cout << RANGE_START << std::endl;
-	managed_ptr<int> ptr = MemoryManager::allocate<int>(100); // Should allocate 100 integers for each managed_ptr.
-	managed_ptr<int> ptr2 = MemoryManager::allocate<int>(100);
-	managed_ptr<int> ptr3 = MemoryManager::allocate<int>(100);
-	ptr[0] = 10; // Just set some values...
-	ptr[1] = 256;
-	ptr2[0] = 1000;
-	ptr2[1] = 1024;
-	ptr3[0] = 100000;
-	ptr3[1] = 4096;
+	{
+		std::cout << RANGE_START << std::endl;
+		managed_ptr<int> ptr = MemoryManager::allocate<int>(100); // Should allocate 100 integers for each managed_ptr.
+		managed_ptr<int> ptr2 = MemoryManager::allocate<int>(100);
+		managed_ptr<int> ptr3 = MemoryManager::allocate<int>(100);
+		ptr[0] = 10; // Just set some values...
+		ptr[1] = 256;
+		ptr2[0] = 1000;
+		ptr2[1] = 1024;
+		ptr3[0] = 100000;
+		ptr3[1] = 4096;
 
-	std::cout << ptr[0] << std::endl; // Print the values.
-	std::cout << ptr[1] << std::endl;
-	std::cout << ptr[99] << std::endl;
-	std::cout << ptr << std::endl;
+		std::cout << ptr[0] << std::endl; // Print the values.
+		std::cout << ptr[1] << std::endl;
+		std::cout << ptr[99] << std::endl;
+		std::cout << ptr << std::endl;
 
-	std::cout << ptr2[0] << std::endl;
-	std::cout << ptr2[1] << std::endl;
-	std::cout << ptr2[99] << std::endl;
-	std::cout << ptr2 << std::endl;
+		std::cout << ptr2[0] << std::endl;
+		std::cout << ptr2[1] << std::endl;
+		std::cout << ptr2[99] << std::endl;
+		std::cout << ptr2 << std::endl;
 
-	std::cout << ptr3[0] << std::endl;
-	std::cout << ptr3[1] << std::endl;
-	std::cout << ptr3[99] << std::endl;
-	std::cout << ptr3 << std::endl;
+		std::cout << ptr3[0] << std::endl;
+		std::cout << ptr3[1] << std::endl;
+		std::cout << ptr3[99] << std::endl;
+		std::cout << ptr3 << std::endl;
 
-	ptr2.~managed_ptr(); // Destruct ptr2 to see if refCounts are working and memory deallocation is also working.
+		ptr2.~managed_ptr(); // Destruct ptr2 to see if refCounts are working and memory deallocation is also working.
 
-	ptr2 = MemoryManager::allocate<int>(100); // Should Allocate the same set of memory it had before.
+		ptr2 = MemoryManager::allocate<int>(100); // Should Allocate the same set of memory it had before.
 
-	std::cout << ptr2[0] << std::endl; // Notice memory is not cleared out.
-	std::cout << ptr2[1] << std::endl;
-	std::cout << ptr2[2] << std::endl;
+		std::cout << ptr2[0] << std::endl; // Notice memory is not cleared out.
+		std::cout << ptr2[1] << std::endl;
+		std::cout << ptr2[2] << std::endl;
 
-	std::cout << ptr2 << std::endl;
+		std::cout << ptr2 << std::endl;
+	}
+	MemoryManager::freeMemoryChunks();
 }
