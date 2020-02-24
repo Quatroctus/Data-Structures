@@ -5,54 +5,54 @@
 // TODO: Restructure this whole file. Move the BinarySearchTree into it's own file.
 // TODO: Restructure the class dynamics/methods to include different traversal orders.
 // TODO: Potentially use a BiNode and container structure to make the BinarySearchTree.
-template <typename T, typename K>
-struct Tree : public List<T> {
+template <typename V, typename K>
+struct Tree : public List<V> {
 	virtual ~Tree() {}
 
 	virtual void getTree(int index, K **prev, K **current, bool remove = false) = 0;
-	virtual bool search(T value, K **prev, K**curent, int *index = NULL, bool remove = false) = 0;
-	virtual bool removeValue(T val) = 0;
+	virtual bool search(V value, K **prev, K**curent, int *index = NULL, bool remove = false) = 0;
+	virtual bool removeValue(V val) = 0;
 	virtual void print(std::ostream &output, unsigned int order, unsigned int indent = 0) = 0;
-	virtual NodeList<T> &breadthFirst(NodeList<T> *list = new NodeList<T>()) = 0;
+	virtual NodeList<V> &breadthFirst(NodeList<V> *list = new NodeList<V>()) = 0;
 
 	virtual void destroyTree() {
 		this->~Tree();
 	}
 };
 
-template <typename T>
-class BinarySearchTree : public Tree<T, BinarySearchTree<T>> {
+template <typename V>
+class BinarySearchTree : public Tree<V, BinarySearchTree<V>> {
 
-	T value;
-	BinarySearchTree<T> *left = NULL, *right = NULL;
+	V value;
+	BinarySearchTree<V> *left = NULL, *right = NULL;
 	int count = 0;
-	int (*compare)(T inTree, T value) = defaultCompare;
+	int (*compare)(V inTree, V value) = defaultCompare;
 
 public:
 	static const unsigned int PRE_ORDER = 0, IN_ORDER = 1, POST_ORDER = 2;
 
-	BinarySearchTree(T val) : value(val) {}
-	BinarySearchTree(int (*compare)(T inTree, T value)) : compare(compare) {}
-	BinarySearchTree(T val, int (*compare)(T inTree, T value)) : value(val), compare(compare) {}
+	BinarySearchTree(V val) : value(val) {}
+	BinarySearchTree(int (*compare)(V inTree, V value)) : compare(compare) {}
+	BinarySearchTree(V val, int (*compare)(V inTree, V value)) : value(val), compare(compare) {}
 
-	bool append(T val) override {
+	bool append(V val) override {
 		int comparison = compare(value, val);
 		bool added = false;
 		if (comparison < 0) {
 			if (left == NULL) {
-				BinarySearchTree<T> *tree = new BinarySearchTree(val, compare);
+				BinarySearchTree<V> *tree = new BinarySearchTree(val, compare);
 				this->left = tree;
 				added = true;
 			} else
 				added = left->append(val);
 		} else if (comparison == 0) {
-			BinarySearchTree<T> *tree = new BinarySearchTree(val, compare);
+			BinarySearchTree<V> *tree = new BinarySearchTree(val, compare);
 			tree->left = this->left;
 			this->left = tree;
 			added = true;
 		} else {
 			if (right == NULL) {
-				BinarySearchTree<T> *tree = new BinarySearchTree(val, compare);
+				BinarySearchTree<V> *tree = new BinarySearchTree(val, compare);
 				this->right = tree;
 				added = true;
 			} else
@@ -63,13 +63,13 @@ public:
 		return added;
 	}
 
-	bool insert(T val, int index) override {
+	bool insert(V val, int index) override {
 		return append(val);
 	}
 
-	bool removeValue(T val) override {
+	bool removeValue(V val) override {
 		int index;
-		BinarySearchTree<T> *prev = NULL, *toBeRemoved;
+		BinarySearchTree<V> *prev = NULL, *toBeRemoved;
 		if (search(val, &prev, &toBeRemoved, &index, true)) {
 			bool leftOfPrev = prev != NULL ? prev->left == toBeRemoved : false;
 			if (prev != NULL && toBeRemoved->left == NULL && toBeRemoved->right == NULL) {
@@ -84,7 +84,7 @@ public:
 					else
 						prev->right = toBeRemoved->left;
 				} else if (prev != NULL) {
-					BinarySearchTree<T> *prevLeftMost = toBeRemoved, *leftMost;
+					BinarySearchTree<V> *prevLeftMost = toBeRemoved, *leftMost;
 					// Get the left most node of the node to the right.
 					// Doing it this way decreases our time complexity from O(2log(n))-O(n) to O(log(n))-O(n). Which is minimal.
 					toBeRemoved->right->getTree(0, &prevLeftMost, &leftMost, true);
@@ -100,13 +100,13 @@ public:
 				} else { // prev == NULL which means we are at the root of our tree.
 					// Current Implementation will correct the tree so that if we remove the root we change the data of the root and delete what ever BinarySearchTree we took values from.
 					if (toBeRemoved->right == NULL && this->left != NULL) {
-						BinarySearchTree<T> *left = this->left;
+						BinarySearchTree<V> *left = this->left;
 						this->right = this->left->right;
 						this->left = this->left->left;
 						this->value = left->value;
 						toBeRemoved = left;
 					} else if (toBeRemoved->right != NULL) {
-						BinarySearchTree<T> *prevLeftMost = toBeRemoved, *leftMost;
+						BinarySearchTree<V> *prevLeftMost = toBeRemoved, *leftMost;
 						toBeRemoved->right->getTree(0, &prevLeftMost, &leftMost, true);
 						if (prevLeftMost == toBeRemoved)
 							prevLeftMost->right = NULL;
@@ -126,10 +126,10 @@ public:
 	/**
 	 * 
 	**/
-	T remove(int index) override {
-		BinarySearchTree<T> *prev = NULL, *toBeRemoved;
+	V remove(int index) override {
+		BinarySearchTree<V> *prev = NULL, *toBeRemoved;
 		getTree(index, &prev, &toBeRemoved, true);
-		T value = toBeRemoved->value;
+		V value = toBeRemoved->value;
 		bool leftOfPrev = prev != NULL ? prev->left == toBeRemoved : false;
 		if (prev != NULL && toBeRemoved->left == NULL && toBeRemoved->right == NULL) {
 			if (leftOfPrev)
@@ -143,7 +143,7 @@ public:
 				else
 					prev->right = toBeRemoved->left;
 			} else if (prev != NULL) {
-				BinarySearchTree<T> *prevLeftMost = toBeRemoved, *leftMost;
+				BinarySearchTree<V> *prevLeftMost = toBeRemoved, *leftMost;
 				// Get the left most node of the node to the right.
 				// Doing it this way decreases our time complexity from O(2log(n))-O(n) to O(log(n))-O(n). Which is minimal.
 				toBeRemoved->right->getTree(0, &prevLeftMost, &leftMost, true);
@@ -159,13 +159,13 @@ public:
 			} else { // prev == NULL which means we are at the root of our tree.
 				// Current Implementation will correct the tree so that if we remove the root we change the data of the root and delete what ever BinarySearchTree we took values from.
 				if (toBeRemoved->right == NULL && this->left != NULL) {
-					BinarySearchTree<T> *left = this->left;
+					BinarySearchTree<V> *left = this->left;
 					this->right = this->left->right;
 					this->left = this->left->left;
 					this->value = left->value;
 					toBeRemoved = left;
 				} else if (toBeRemoved->right != NULL) {
-					BinarySearchTree<T> *prevLeftMost = toBeRemoved, *leftMost;
+					BinarySearchTree<V> *prevLeftMost = toBeRemoved, *leftMost;
 					toBeRemoved->right->getTree(0, &prevLeftMost, &leftMost, true);
 					if (prevLeftMost == toBeRemoved)
 						prevLeftMost->right = NULL;
@@ -183,7 +183,7 @@ public:
 	/**
 	 * This function will get values from the Tree in sorted order as if it was a SortedArrayList but with O(log(n))-O(n) time.
 	**/
-	T &get(int index) override {
+	V &get(int index) override {
 		if (index < 0 || index > count)
 			throw std::out_of_range("Index: " + std::to_string(index) + " Size: " + std::to_string(count));
 		if (left == NULL && index == 0 || left != NULL && left->count + 1 == index)
@@ -195,9 +195,9 @@ public:
 	}
 
 	void destroyTree() override {
-		NodeList<BinarySearchTree<T> *> list = NodeList<BinarySearchTree<T> *>(this);
+		NodeList<BinarySearchTree<V> *> list = NodeList<BinarySearchTree<V> *>(this);
 		while (list.size() > 0) {
-			BinarySearchTree<T> *first = list.get(0);
+			BinarySearchTree<V> *first = list.get(0);
 			if (first->left != NULL)
 				list.append(first->left);
 			if (first->right != NULL)
@@ -207,7 +207,7 @@ public:
 		}
 	}
 
-	NodeList<T> &breadthFirst(NodeList<T> *list) override {
+	NodeList<V> &breadthFirst(NodeList<V> *list) override {
 		list->append(this->value);
 		if (this->left != NULL)
 			this->left->breadthFirst(list);
@@ -216,7 +216,7 @@ public:
 		return *list;
 	}
 
-	void getTree(int index, BinarySearchTree<T> **prev, BinarySearchTree<T> **current, bool remove = false) {
+	void getTree(int index, BinarySearchTree<V> **prev, BinarySearchTree<V> **current, bool remove = false) {
 		if (index < 0 || index > count)
 			throw std::out_of_range("Index: " + std::to_string(index) + " Size: " + std::to_string(count));
 		if (remove)
@@ -233,7 +233,7 @@ public:
 	}
 
 	// Searches for a specific value within the BinarySearchTree.
-	bool search(T val, BinarySearchTree<T> **prev, BinarySearchTree<T> **current, int *index = NULL, bool remove = false) {
+	bool search(V val, BinarySearchTree<V> **prev, BinarySearchTree<V> **current, int *index = NULL, bool remove = false) {
 		int comparison = compare(this->value, val);
 		if (comparison == 0) {
 			*current = this;

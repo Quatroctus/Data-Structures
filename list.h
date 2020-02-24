@@ -1,7 +1,7 @@
 #pragma once
 #include <memory>
 
-template <typename T>
+template <typename V>
 struct List {
 	virtual ~List() {}
 	/**
@@ -13,7 +13,7 @@ struct List {
 	@param val The value to be appended to the back of the List.
 	@return Whether the operation succeeded or not.
 	*/
-	virtual bool append(T val) = 0;
+	virtual bool append(V val) = 0;
 	/**
 	Inserts a value into this ArrayList at the specified index.
 	
@@ -24,7 +24,7 @@ struct List {
 	@param index The index of the list for which to insert at.
 	@return Whether the operation succeeded or not.
 	*/
-	virtual bool insert(T val, int index = 0) = 0;
+	virtual bool insert(V val, int index = 0) = 0;
 	/**
 	Removes a value at the specified index.
 	
@@ -34,7 +34,7 @@ struct List {
 	@param index The index of the list for which to remove.
 	@return The value which was removed at the index.
 	*/
-	virtual T remove(int index) = 0;
+	virtual V remove(int index) = 0;
 	/**
 	Returns the value at the index as a reference.
 	
@@ -44,14 +44,14 @@ struct List {
 	@param index The index of the value you want.
 	@return The value at the specified index.
 	*/
-	virtual T &get(int index) = 0;
+	virtual V &get(int index) = 0;
 	/**
 	@return The filled size of the List.
 	*/
 	virtual int size() = 0;
 };
 
-template <typename T>
-int defaultCompare(T inList, T value) {
+template <typename V>
+int defaultCompare(V inList, V value) {
 	return value < inList ? -1 : value == inList ? 0 : 1;
 }

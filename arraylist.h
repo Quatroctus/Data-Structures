@@ -2,32 +2,32 @@
 #include <string>
 #include "list.h"
 
-template <typename T>
-class ArrayList : public List<T> {
+template <typename V>
+class ArrayList : public List<V> {
 public:
 	ArrayList() {
 		this->resizeAmount = -1;
-		this->items = new T[this->length];
+		this->items = new V[this->length];
 	}
 	ArrayList(int size) {
 		this->length = size;
-		this->items = new T[this->length];
+		this->items = new V[this->length];
 	}
 	ArrayList(int size, int resizeAmount) {
 		this->length = size;
 		this->resizeAmount = resizeAmount;
-		this->items = new T[this->length];
+		this->items = new V[this->length];
 	}
 	~ArrayList() override {
 		delete[] items;
 	}
 
-	bool append(T val) override {
+	bool append(V val) override {
 		// Time Complexity O(1)->O(n).
-		T *backup = this->items;
+		V *backup = this->items;
 		if (filled == this->length) {
 			this->length = resizeAmount < 0 ? this->length * 2 : this->length + resizeAmount;
-			this->items = new T[this->length];
+			this->items = new V[this->length];
 			if (items != NULL) {
 				std::copy(backup, backup + filled, this->items);
 				delete[] backup;
@@ -41,17 +41,17 @@ public:
 		return true;
 	}
 
-	bool insert(T val, int index) override {
+	bool insert(V val, int index) override {
 		// Time Complexity O(1)->O(n).
 		if (index < 0 || index > filled)
 			// Maybe throw a std::out_of_range("Index: " << index << " Size: " << filled);
 			return false;
 		if (index == filled)
-			return ArrayList<T>::append(val);
-		T *backup = this->items;
+			return ArrayList<V>::append(val);
+		V *backup = this->items;
 		if (filled == this->length) {
 			this->length = resizeAmount < 0 ? this->length * 2 : this->length + resizeAmount;
-			this->items = new T[this->length];
+			this->items = new V[this->length];
 		}
 		if (this->items != NULL) {
 			// Copy the memory from the backup in sections. Before the index and after the index.
@@ -70,17 +70,17 @@ public:
 		return true;
 	}
 
-	T remove(int index) override {
+	V remove(int index) override {
 		// Time Complexity O(1)->O(n).
 		if (index < 0 || index >= filled)
 			throw std::out_of_range("Index: " + std::to_string(index) + " Size: " + std::to_string(filled));
-		T t = items[index];
+		V t = items[index];
 		std::copy(this->items + index + 1, this->items + filled, this->items + index);
 		filled--;
 		return t;
 	}
 
-	T &get(int index) override {
+	V &get(int index) override {
 		// Time Complexity O(1).
 		if (index < 0 || index >= filled)
 			throw std::out_of_range("Index: " + std::to_string(index) + " Size: " + std::to_string(filled));
@@ -91,5 +91,5 @@ public:
 
 protected:
 	int filled = 0, length = 1, resizeAmount;
-	T *items;
+	V *items;
 };
