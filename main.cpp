@@ -1,8 +1,9 @@
-#define USE_BITSET // Use a std::bitset to keep track of allocated and free locations.
-#define MEMORY_ALLOCATION 1272 // Request an allocation chunk size.
+//#define USE_BITSET // Use a std::bitset to keep track of allocated and free locations.
+#define ALLOCATION_SIZE 416 // Request an allocation chunk size.
 #include "memory_manager.h"
 
 #include "marble_bag.h"
+#include "hash_map.h"
 #include "lists.h"
 #include "queue.h"
 #include "tree.h"
@@ -220,43 +221,93 @@ void testBinarySearchTree() {
 	tree->destroyTree();
 }
 
+void testMemoryManager() {
+	std::cout << START << std::endl;
+	managed_ptr<int> ptr = MemoryManager::allocate<int>(100); // Should allocate 100 integers for each managed_ptr.
+	managed_ptr<int> ptr2 = MemoryManager::allocate<int>(100);
+	managed_ptr<int> ptr3 = MemoryManager::allocate<int>(120);
+	ptr[0] = 10; // Just set some values...
+	ptr[1] = 256;
+	ptr2[0] = 1000;
+	ptr2[1] = 1024;
+	ptr3[0] = 100000;
+	ptr3[1] = 4096;
+
+	std::cout << ptr[0] << std::endl; // Print the values.
+	std::cout << ptr[1] << std::endl;
+	std::cout << ptr[99] << std::endl;
+	std::cout << ptr << std::endl;
+	std::cout << ptr2[0] << std::endl;
+	std::cout << ptr2[1] << std::endl;
+	std::cout << ptr2[99] << std::endl;
+	std::cout << ptr2 << std::endl;
+	std::cout << ptr3[0] << std::endl;
+	std::cout << ptr3[1] << std::endl;
+	std::cout << ptr3[119] << std::endl;
+	std::cout << ptr3 << std::endl;
+
+	ptr2.~managed_ptr(); // Destruct ptr2 to see if refCounts are working and memory deallocation is also working.
+	ptr2 = MemoryManager::allocate<int>(100); // Should Allocate the same set of memory it had before.
+	std::cout << ptr2[0] << std::endl; // Notice memory is not cleared out.
+	std::cout << ptr2[1] << std::endl;
+	std::cout << ptr2[2] << std::endl;
+	std::cout << ptr2 << std::endl;
+
+	MemoryManager::freeAllocations();
+}
+
+void testHashMap() {
+	Map<std::string, int> *map = new HashMap<std::string, int>();
+
+	map->put("hundred", 100);
+	map->put("big", 102);
+
+	Optional<int> val = map->query("hundred");
+	if (val.exists)
+		std::cout << "Value at 'hundred' is: " << val.value << std::endl;
+	else
+		std::cout << "No Value Found at key 'hundred'" << std::endl;
+	val = map->query("big");
+	if (val.exists)
+		std::cout << "Value at 'big' is: " << val.value << std::endl;
+	else
+		std::cout << "No Value Found at key 'big'" << std::endl;
+	val = map->query("alphabet");
+	if (val.exists)
+		std::cout << "Value at 'alphabet' is: " << val.value << std::endl;
+	else
+		std::cout << "No Value Found at key 'alphabet'" << std::endl;
+
+	std::cout << "Map contains 'hundred': " << (map->contains("hundred") ? "true" : "false") << std::endl;
+	std::cout << "Map contains 'big': " << (map->contains("big") ? "true" : "false") << std::endl;
+	std::cout << "Map contains 'alphabet': " << (map->contains("alphabet") ? "true" : "false") << std::endl;
+
+	val = map->remove("big");
+	if (val.exists)
+		std::cout << "Removed " << val.value << " found at key 'big'" << std::endl;
+	else
+		std::cout << "No Value Found for Removal with key: 'big'" << std::endl;
+
+	std::cout << "Map contains 'hundred': " << (map->contains("hundred") ? "true" : "false") << std::endl;
+	std::cout << "Map contains 'big': " << (map->contains("big") ? "true" : "false") << std::endl;
+	std::cout << "Map contains 'alphabet': " << (map->contains("alphabet") ? "true" : "false") << std::endl;
+
+	map->put("big", 102);
+	map->put("alphabet", 26);
+
+	val = map->query("alphabet");
+	if (val.exists)
+		std::cout << "Value at 'alphabet' is: " << val.value << std::endl;
+	else
+		std::cout << "No Value Found at key 'alphabet'" << std::endl;
+
+	std::cout << "Map contains 'hundred': " << (map->contains("hundred") ? "true" : "false") << std::endl;
+	std::cout << "Map contains 'big': " << (map->contains("big") ? "true" : "false") << std::endl;
+	std::cout << "Map contains 'alphabet': " << (map->contains("alphabet") ? "true" : "false") << std::endl;
+
+}
+
 int main(void) {
-	{
-		std::cout << RANGE_START << std::endl;
-		managed_ptr<int> ptr = MemoryManager::allocate<int>(100); // Should allocate 100 integers for each managed_ptr.
-		managed_ptr<int> ptr2 = MemoryManager::allocate<int>(100);
-		managed_ptr<int> ptr3 = MemoryManager::allocate<int>(100);
-		ptr[0] = 10; // Just set some values...
-		ptr[1] = 256;
-		ptr2[0] = 1000;
-		ptr2[1] = 1024;
-		ptr3[0] = 100000;
-		ptr3[1] = 4096;
-
-		std::cout << ptr[0] << std::endl; // Print the values.
-		std::cout << ptr[1] << std::endl;
-		std::cout << ptr[99] << std::endl;
-		std::cout << ptr << std::endl;
-
-		std::cout << ptr2[0] << std::endl;
-		std::cout << ptr2[1] << std::endl;
-		std::cout << ptr2[99] << std::endl;
-		std::cout << ptr2 << std::endl;
-
-		std::cout << ptr3[0] << std::endl;
-		std::cout << ptr3[1] << std::endl;
-		std::cout << ptr3[99] << std::endl;
-		std::cout << ptr3 << std::endl;
-
-		ptr2.~managed_ptr(); // Destruct ptr2 to see if refCounts are working and memory deallocation is also working.
-
-		ptr2 = MemoryManager::allocate<int>(100); // Should Allocate the same set of memory it had before.
-
-		std::cout << ptr2[0] << std::endl; // Notice memory is not cleared out.
-		std::cout << ptr2[1] << std::endl;
-		std::cout << ptr2[2] << std::endl;
-
-		std::cout << ptr2 << std::endl;
-	}
-	MemoryManager::freeMemoryChunks();
+	testHashMap();
+	return 0;
 }

@@ -99,6 +99,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -129,6 +130,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -139,12 +141,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="arraylist.h" />
+    <ClInclude Include="hash_map.h" />
+    <ClInclude Include="hash_primitives.h" />
     <ClInclude Include="list.h" />
     <ClInclude Include="lists.h" />
     <ClInclude Include="marble_bag.h" />
     <ClInclude Include="memory_manager.h" />
     <ClInclude Include="node.h" />
     <ClInclude Include="nodelist.h" />
+    <ClInclude Include="optional.h" />
     <ClInclude Include="queue.h" />
     <ClInclude Include="sortedarraylist.h" />
     <ClInclude Include="sortedlists.h" />
