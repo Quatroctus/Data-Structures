@@ -12,7 +12,7 @@ using byte = unsigned char;
 #define ALLOCATION_SIZE 10240000
 #endif
 #ifdef USE_BITSET
-constexpr size_t START = (ALLOCATION_SIZE / 8) + ((ALLOCATION_SIZE % 8) != 0);
+constexpr size_t START = sizeof(std::bitset<ALLOCATION_SIZE>);
 #else
 constexpr size_t START = 0;
 #endif
@@ -203,7 +203,7 @@ class MemoryManager {
 		for (size_t i = 0; i < times; i++) {
 			allocations.push_back(Allocation(raw + i * TRUE_ALLOC_SIZE, i + 1 < times)); // Put the beginning of each time into the allocations vector.
 #ifdef USE_BITSET
-			allocations[allocations.size() - 1].bits = reinterpret_cast<std::bitset<ALLOCATION_SIZE> *>(allocations[allocations.size() - 1].memory + i * TRUE_ALLOC_SIZE); // Give our bits the start of the requested memory.
+			allocations[allocations.size() - 1].bits = reinterpret_cast<std::bitset<ALLOCATION_SIZE> *>(allocations[allocations.size() - 1].memory); // Give our bits the start of the requested memory.
 #endif
 		}
 		return true;
