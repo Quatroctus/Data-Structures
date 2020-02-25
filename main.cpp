@@ -1,10 +1,11 @@
-//#define USE_BITSET // Use a std::bitset to keep track of allocated and free locations.
+#define USE_BITSET // Use a std::bitset to keep track of allocated and free locations.
 #define ALLOCATION_SIZE 416 // Request an allocation chunk size.
 #include "memory_manager.h"
 
-#include "marble_bag.h"
 #include "hash_map.h"
+#include "hash_set.h"
 #include "lists.h"
+#include "marble_bag.h"
 #include "queue.h"
 #include "tree.h"
 #include <iostream>
@@ -166,14 +167,14 @@ void testSortedArrayList() {
 
 void testBinarySearchTree() {
 	Tree<int, BinarySearchTree<int>> *tree = new BinarySearchTree<int>(90);
-	int values[10] = {10, 20, 0, 30, 40, 50, 60, 70, 80, 100};
+	int values[10] = { 10, 20, 0, 30, 40, 50, 60, 70, 80, 100 };
 
-	for (auto& val : values)
+	for (auto &val : values)
 		tree->append(val);
 
 	for (int i = 0; i < 11; i++)
 		std::cout << "Value " << tree->get(i) << " at " << i << std::endl;
-	
+
 	std::cout << "Pre-Order" << std::endl;
 	tree->print(std::cout, BinarySearchTree<int>::PRE_ORDER);
 	std::cout << std::endl;
@@ -246,9 +247,9 @@ void testMemoryManager() {
 	std::cout << ptr3[119] << std::endl;
 	std::cout << ptr3 << std::endl;
 
-	ptr2.~managed_ptr(); // Destruct ptr2 to see if refCounts are working and memory deallocation is also working.
+	ptr2.~managed_ptr();					  // Destruct ptr2 to see if refCounts are working and memory deallocation is also working.
 	ptr2 = MemoryManager::allocate<int>(100); // Should Allocate the same set of memory it had before.
-	std::cout << ptr2[0] << std::endl; // Notice memory is not cleared out.
+	std::cout << ptr2[0] << std::endl;		  // Notice memory is not cleared out.
 	std::cout << ptr2[1] << std::endl;
 	std::cout << ptr2[2] << std::endl;
 	std::cout << ptr2 << std::endl;
@@ -259,8 +260,7 @@ void testMemoryManager() {
 void testHashMap() {
 	Map<std::string, int> *map = new HashMap<std::string, int>();
 
-	map->put("hundred", 100);
-	map->put("big", 102);
+	map->put("hundred", 100).put("big", 102);
 
 	Optional<int> val = map->query("hundred");
 	if (val.exists)
@@ -304,10 +304,31 @@ void testHashMap() {
 	std::cout << "Map contains 'hundred': " << (map->contains("hundred") ? "true" : "false") << std::endl;
 	std::cout << "Map contains 'big': " << (map->contains("big") ? "true" : "false") << std::endl;
 	std::cout << "Map contains 'alphabet': " << (map->contains("alphabet") ? "true" : "false") << std::endl;
+}
 
+void testHashSet() {
+	Set<std::string> *stringSet = new HashSet<std::string>();
+
+	stringSet->add("hundred").add("big");
+
+	Optional<std::string> val = stringSet->query("hundred");
+	if (val.exists)
+		std::cout << "Value at 'hundred' is: " << val.value << std::endl;
+	else
+		std::cout << "No Value Found at key 'hundred'" << std::endl;
+	val = stringSet->query("big");
+	if (val.exists)
+		std::cout << "Value at 'big' is: " << val.value << std::endl;
+	else
+		std::cout << "No Value Found at key 'big'" << std::endl;
+	val = stringSet->query("alphabet");
+	if (val.exists)
+		std::cout << "Value at 'alphabet' is: " << val.value << std::endl;
+	else
+		std::cout << "No Value Found at key 'alphabet'" << std::endl;
 }
 
 int main(void) {
-	testHashMap();
+	testHashSet();
 	return 0;
 }

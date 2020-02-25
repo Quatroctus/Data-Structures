@@ -143,6 +143,7 @@
     <ClInclude Include="arraylist.h" />
     <ClInclude Include="hash_map.h" />
     <ClInclude Include="hash_primitives.h" />
+    <ClInclude Include="hash_set.h" />
     <ClInclude Include="list.h" />
     <ClInclude Include="lists.h" />
     <ClInclude Include="marble_bag.h" />
