@@ -1,15 +1,11 @@
 #pragma once
 #include "hash_primitives.h"
-#include <memory>
 #include "optional.h"
 #include <string>
-
-#include <iostream>
+#include <vector>
 
 template <typename K, typename V>
 struct Map {
-
-public:
 	virtual ~Map() {}
 
 	virtual Map<K, V> &put(K key, V val) = 0;
@@ -21,15 +17,14 @@ public:
 	virtual Optional<V> query(K key) = 0;
 
 	virtual void getEntries(std::vector<std::pair<K, V>> *entries) = 0;
-};
 
-template <typename K, typename V>
-struct Entry {
-	bool isValue;
-	union {
-		V value;
-		Map<K, V> *map;
-	} entry;
+	struct Entry {
+		bool isValue;
+		union {
+			V value;
+			Map<K, V> *map;
+		} entry;
+	};
 };
 
 template <typename K, typename V>
@@ -37,20 +32,20 @@ class HashMap : public Map<K, V> {
 	size_t length, count, depth;
 	float loadFactor;
 	const float reHashFactor = 0.65F;
-	Entry<K, V> *values;
+	Map<K, V>::template Entry *values;
 	Optional<K> *keys;
 
 	size_t (*hash)(K key);
 
 	void createArrays() {
-		values = new Entry<K, V>[length];
+		values = new Map<K, V>::template Entry[length];
 		keys = new Optional<K>[length];
 	}
 
 	size_t hashEntry(K key) {
 		size_t depthMultiplier = 13 * depth;
 		for (size_t i = 0; i < depth; i++)
-			depthMultiplier *= 27;
+			depthMultiplier *= 29;
 		if (hash != nullptr)
 			return (hash(key) * depthMultiplier) % length;
 		else if (primitive<K>::exists())
@@ -65,7 +60,6 @@ class HashMap : public Map<K, V> {
 	}
 
 	void rehash() {
-		std::cout << "Rehashing every entry." << std::endl;
 		std::vector<std::pair<K, V>> entries;
 		getEntries(&entries);
 		length *= 2;
@@ -103,9 +97,12 @@ public:
 		if (!actualKey.exists || actualKey.value == key) {
 			actualKey.exists = true;
 			actualKey.value = key;
-			values[index].entry.value = value;
+			if (values[index].isValue)
+				values[index].entry.value = value;
+			else
+				values[index].entry.map->put(key, value);
 		} else if (values[index].isValue) {
-			Entry<K, V> &entry = values[index];
+			Map<K, V>::template Entry &entry = values[index];
 			V val = entry.entry.value;
 			entry.isValue = false;
 			entry.entry.map = new HashMap<K, V>(2, depth + 1, hash);
@@ -129,7 +126,7 @@ public:
 				loadFactor = float(count / length);
 				return values[index].entry.value;
 			} else {
-				Optional<V> optVal = values[index].entry.map->remove(key); 
+				Optional<V> optVal = values[index].entry.map->remove(key);
 				if (optVal.exists) {
 					count--;
 					loadFactor = float(count / length);
@@ -143,7 +140,7 @@ public:
 	bool contains(K key) override {
 		size_t index = hashEntry(key);
 		Optional<K> &actualKey = keys[index];
-		Entry<K, V> value = values[index];
+		Map<K, V>::template Entry value = values[index];
 		return actualKey.exists && ((value.isValue && actualKey.value == key) || (!value.isValue && value.entry.map->contains(key)));
 	}
 
@@ -152,7 +149,7 @@ public:
 		Optional<K> &actualKey = keys[index];
 		if (!actualKey.exists)
 			return Optional<V>();
-		Entry<K, V> value = values[index];
+		Map<K, V>::template Entry value = values[index];
 		if (!value.isValue)
 			return value.entry.map->query(key);
 		if (actualKey.value == key)
@@ -164,7 +161,7 @@ public:
 		for (size_t i = 0; i < length; i++) {
 			Optional<K> &actualKey = keys[i];
 			if (actualKey.exists) {
-				Entry<K, V> value = values[i];
+				Map<K, V>::template Entry value = values[i];
 				if (value.isValue && entries != NULL)
 					entries->push_back(std::make_pair(actualKey.value, value.entry.value));
 				else {
@@ -173,10 +170,9 @@ public:
 				}
 			}
 		}
-		values = NULL;
-		keys = NULL;
 		delete[] values;
 		delete[] keys;
+		values = NULL;
+		keys = NULL;
 	}
-
 };
